@@ -1,14 +1,13 @@
 import axios, { AxiosResponse, AxiosRequestConfig, Method } from 'axios';
-import { message } from 'antd';
 import { at } from 'lodash';
 import {
   _defaultErrorCodeHandler,
   _defaultHttpErrorCodeHandler,
   _defaultOtherErrorCodeHandler,
-  defaultEquals,
-} from '../_utils/_defaults';
-import { Cache } from '../cache';
-export type StorageType = 'sessionStorage' | 'localStorage' | 'indexedDB';
+} from './defaultHandlers';
+import defaultEquals from '../defaultEquals';
+import Cache, { type StorageType } from '../cache';
+
 
 export type ErrorHandlerReturnType<D> = {
   replaceResData?: D;
@@ -18,6 +17,8 @@ export type ErrorHandlerReturnType<D> = {
 export interface Options<Params = any, Data = any> {
   baseURL?: string;
   throwError?: boolean;
+
+  defaultMessageShower?:(message: string) => void;
 
   enableCache?: boolean;
   cacheKeyEquals?: (prev: Params, next: Params) => boolean;
@@ -72,7 +73,7 @@ export interface RequestOptions<Param> {
   data?: Param;
   params?: Param;
 }
-export function createBaseRequest(baseOptions?: Options) {
+export default function createBaseRequest(baseOptions?: Options) {
   const { baseURL } = Object(baseOptions);
 
   // 创建新的 Axios 实例
@@ -121,13 +122,18 @@ export function createBaseRequest(baseOptions?: Options) {
         params = {} as Param,
       } = { ...requestOptions, ...requestParam };
 
+      
+      const { defaultMessageShower = alert } = { ...baseOptions, ...createOptions, ...options };
+
+
+
       const {
         baseURL,
         enableCache = false,
         cacheData = false,
-        defaultErrorCodeHandler = _defaultErrorCodeHandler,
-        defaultHttpErrorCodeHandler = _defaultHttpErrorCodeHandler,
-        otherErrorHandler = _defaultOtherErrorCodeHandler,
+        defaultErrorCodeHandler = _defaultErrorCodeHandler.bind(null, defaultMessageShower),
+        defaultHttpErrorCodeHandler = _defaultHttpErrorCodeHandler.bind(null, defaultMessageShower),
+        otherErrorHandler = _defaultOtherErrorCodeHandler.bind(null, defaultMessageShower),
         errorCodePath = 'code',
         cacheTime = 60,
         errorCodeMap = {},
@@ -169,7 +175,7 @@ export function createBaseRequest(baseOptions?: Options) {
             err.data = res;
 
             if (typeof customHandler === 'string') {
-              message.error(customHandler);
+              defaultMessageShower(customHandler);
             } else {
               const {
                 replaceResData = res.data,

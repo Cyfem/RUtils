@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { IndexedDBStorage } from '../_utils/indexdb';
-import { defaultEquals } from '../_utils/_defaults';
+import { IndexedDBStorage } from './indexDB';
+import defaultEquals from '../defaultEquals';
 export type StorageType = 'sessionStorage' | 'localStorage' | 'indexedDB';
 
 export interface ICache<Param, Data> {
@@ -22,9 +22,9 @@ export const StorageMap: Record<StorageType | string, Storage> = {
   sessionStorage: sessionStorage,
 };
 
-export class Cache<Param, Data> {
+export default class Cache<Param, Data> {
   cache: ICache<Param, Data>[] = [];
-  cacheOptions: ICacheOptions<Param>;
+  private cacheOptions: ICacheOptions<Param>;
   storage?: Storage | IndexedDBStorage;
   constructor(
     cacheType?: StorageType,
@@ -48,7 +48,7 @@ export class Cache<Param, Data> {
     this._init();
   }
 
-  async _init() {
+  private async _init() {
     const { storageType: cacheType, cacheKey: cacheKey } = this.cacheOptions;
     if (this.storage instanceof IndexedDBStorage) {
       this.cache = JSON.parse(
@@ -72,13 +72,13 @@ export class Cache<Param, Data> {
     this._filterExpired();
     this._saveToStorage();
   }
-  _filterExpired() {
+  private _filterExpired() {
     const newCache = this.cache.filter((item) => {
       return moment(item.expireTime).isAfter(moment());
     });
     this.cache = newCache;
   }
-  _saveToStorage() {
+  private _saveToStorage() {
     if (this.storage) {
       if (typeof this.cacheOptions.cacheKey === 'string') {
         this.storage.setItem(

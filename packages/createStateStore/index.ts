@@ -11,6 +11,7 @@ export type IHookStateResolvable<S> =
   | IHookStateInitialSetter<S>
   | IHookStateSetter<S>;
 
+  
 export function resolveHookState<S>(nextState: IHookStateInitAction<S>): S;
 export function resolveHookState<S, C extends S>(
   nextState: IHookStateSetAction<S>,
@@ -20,6 +21,7 @@ export function resolveHookState<S, C extends S>(
   nextState: IHookStateResolvable<S>,
   currentState: C,
 ): S;
+
 
 export function resolveHookState<S, C extends S>(
   nextState: IHookStateResolvable<S>,
@@ -34,7 +36,7 @@ export function resolveHookState<S, C extends S>(
   return nextState;
 }
 
-export const isBrowser = typeof window !== 'undefined';
+const isBrowser = typeof window !== 'undefined';
 
 const useEffectOnce = (effect: EffectCallback) => {
   useEffect(effect, []);
@@ -42,7 +44,7 @@ const useEffectOnce = (effect: EffectCallback) => {
 
 const useIsomorphicLayoutEffect = isBrowser ? useLayoutEffect : useEffect;
 
-export function createStateStore<S>(initialState?: S) {
+export default function createStateStore<S>(initialState?: S) {
   const store: {
     state: S;
     setState: (state: IHookStateSetAction<S>) => void;
@@ -92,5 +94,3 @@ export function createStateStore<S>(initialState?: S) {
     watch,
   };
 }
-
-export default createStateStore;

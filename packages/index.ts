@@ -1,12 +1,12 @@
-import { Cache } from './cache';
-import { createBaseRequest } from './request';
-import { IndexedDBStorage } from './_utils/indexdb';
+export { default as Cache } from './cache';
+export { default as createBaseRequest } from './request';
+export { default as createStateStore } from './createStateStore';
 
-export { Cache, createBaseRequest, IndexedDBStorage };
 export type { ICache, ICacheOptions, StorageMap } from './cache';
 export type {
   ErrorHandlerReturnType,
-  StorageType,
   Options,
   RequestOptions,
 } from './request';
+
+export type { IHookStateInitialSetter, IHookStateInitAction, IHookStateSetter, IHookStateSetAction, IHookStateResolvable } from './createStateStore';
