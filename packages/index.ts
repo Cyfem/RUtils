@@ -2,7 +2,7 @@ export { default as Cache } from './cache';
 export { default as createBaseRequest } from './request';
 export { default as createStateStore } from './createStateStore';
 
-export type { ICache, ICacheOptions, StorageMap } from './cache';
+export type { ICache, ICacheOptions, StorageMap, StorageType } from './cache';
 export type {
   ErrorHandlerReturnType,
   Options,
