@@ -7,6 +7,8 @@ export type {
   ErrorHandlerReturnType,
   Options,
   RequestOptions,
+  RequestError,
+  RequestErrorType,
 } from './request';
 
 export type { IHookStateInitialSetter, IHookStateInitAction, IHookStateSetter, IHookStateSetAction, IHookStateResolvable } from './createStateStore';

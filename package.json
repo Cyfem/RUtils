@@ -1,16 +1,9 @@
 {
   "name": "rxtutils",
-  "version": "1.0.3",
+  "version": "1.0.8",
   "main": "dist/cjs/index.cjs",
   "module": "dist/es/index.mjs",
   "types": "dist/types/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/es/index.mjs",
-      "require": "./dist/cjs/index.cjs",
-      "types": "./dist/types/index.d.ts"
-    }
-  },
   "files": [
     "dist"
   ],
@@ -20,9 +13,11 @@
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^12.1.2",
+    "@types/lodash": "^4.17.17",
     "@types/node": "^22.15.29",
     "rollup": "^4.41.1",
     "rollup-plugin-dts": "^6.2.1",
+    "tslib": "^2.8.1",
     "typescript": "^5.8.3",
     "vite": "^5.4.19"
   },

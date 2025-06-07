@@ -7,7 +7,7 @@ import {
 } from './defaultHandlers';
 import defaultEquals from '../defaultEquals';
 import Cache, { type StorageType } from '../cache';
-
+import RequestError,{type RequestErrorType} from './error';
 
 export type ErrorHandlerReturnType<D> = {
   replaceResData?: D;
@@ -73,6 +73,7 @@ export interface RequestOptions<Param> {
   data?: Param;
   params?: Param;
 }
+
 export default function createBaseRequest(baseOptions?: Options) {
   const { baseURL } = Object(baseOptions);
 
@@ -128,7 +129,6 @@ export default function createBaseRequest(baseOptions?: Options) {
 
 
       const {
-        baseURL,
         enableCache = false,
         cacheData = false,
         defaultErrorCodeHandler = _defaultErrorCodeHandler.bind(null, defaultMessageShower),
@@ -154,7 +154,6 @@ export default function createBaseRequest(baseOptions?: Options) {
           url,
           data,
           params,
-          baseURL,
           ...axiosOptions,
         })
         .then(
@@ -170,9 +169,7 @@ export default function createBaseRequest(baseOptions?: Options) {
             const { [errorCode]: customHandler = defaultErrorCodeHandler } =
               errorCodeMap;
 
-            const err = new Error('服务端错误');
-            err.type = 'server';
-            err.data = res;
+            const err = new RequestError('服务端错误','server',res);
 
             if (typeof customHandler === 'string') {
               defaultMessageShower(customHandler);
@@ -209,12 +206,10 @@ export default function createBaseRequest(baseOptions?: Options) {
                   customHandler = defaultHttpErrorCodeHandler,
               } = httpErrorCodeMap;
 
-              const err = new Error('服务端错误');
-              err.type = 'http';
-              err.data = error;
+              const err = new RequestError('服务端错误', 'http', error);
 
               if (typeof customHandler === 'string') {
-                message.error(customHandler);
+                defaultMessageShower(customHandler);
               } else {
                 const {
                   replaceResData = error,
@@ -243,7 +238,7 @@ export default function createBaseRequest(baseOptions?: Options) {
             } else {
               let resData = error;
 
-              const err = new Error('服务端错误');
+              const err = new RequestError('服务端错误','http', error);
               err.type = 'http';
               err.data = error;
 
@@ -280,3 +275,5 @@ export default function createBaseRequest(baseOptions?: Options) {
     return request;
   };
 }
+
+export { type RequestError,type RequestErrorType };

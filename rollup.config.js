@@ -1,35 +1,37 @@
 
 // rollup.config.ts
-import path from 'path';
 import dts from 'rollup-plugin-dts';
-
+import typescript from '@rollup/plugin-typescript';
 const input = 'packages/index.ts';
 
 export default [
   // JS 构建
   {
     input,
-    plugins: [dts()],
+    plugins: [
+      typescript({})
+    ],
     output: [
       {
         dir: 'dist/es',
         format: 'es',
         preserveModules: true,
         preserveModulesRoot: 'packages',
-        entryFileNames: '[name].mjs',
+        entryFileNames: '[name].mjs'
       },
       {
         dir: 'dist/cjs',
         format: 'cjs',
         preserveModules: true,
         preserveModulesRoot: 'packages',
-        entryFileNames: '[name].cjs',
+        entryFileNames: '[name].cjs'
       }
-    ]
+    ],
+    external: [/node_modules/] // 避免将依赖打包进来
   },
   // 类型定义
   {
-  input: 'packages/index.ts',
+  input: input,
   output: {
     dir: 'dist/types', // 类型声明输出目录
     format: 'es',
