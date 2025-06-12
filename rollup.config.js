@@ -27,7 +27,7 @@ export default [
         entryFileNames: '[name].cjs'
       }
     ],
-    external: [/node_modules/] // 避免将依赖打包进来
+    external: [/node_modules/,"react"] // 避免将依赖打包进来
   },
   // 类型定义
   {
