@@ -15,7 +15,13 @@ export type GetterNameMap<G extends StoreGetter<any>> = {
 export type ReducedData<G extends StoreGetter<any>, M extends GetterNameMap<G>> = {
   [K in keyof M as M[K]]: G[K extends keyof G ? K : never] extends (store: any) => infer R ? R : never
 }
-
+/**
+ * 创建 store getter
+ * @param store store实例
+ * @param getters getter函数
+ * @param getterNameMaps 将 getter 函数和 getter 名称一一映射
+ * @returns getter object
+ */
 export const createStoreGetter = <S, G extends StoreGetter<S>, M extends GetterNameMap<G>>(
   store: ReturnType<typeof createStateStore<S>>,
   getters: G,
@@ -29,7 +35,13 @@ export const createStoreGetter = <S, G extends StoreGetter<S>, M extends GetterN
   })
   return gettersObj
 }
-
+/**
+ * 
+ * @param store store实例
+ * @param getters getter函数
+ * @param getterNameMaps 将 getter 函数和 getter 名称一一映射
+ * @returns getter memo hook
+ */
 export const createStoreGetterMemo = <
   S,
   G extends StoreGetter<S>,
