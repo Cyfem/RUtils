@@ -6,8 +6,8 @@ export { default as Cache } from './cache';
 /** HTTP 请求创建模块 */
 export { default as createBaseRequest } from './request';
 /** 状态管理模块 */
-export { default as createStateStore } from './createStateStore';
-
+export { createStateStore } from './store';
+export { createStoreGetter, createStoreGetterMemo } from './store';
 /**
  * 缓存模块类型导出
  * 包含缓存接口、配置选项、存储映射和存储类型
@@ -36,4 +36,4 @@ export type {
   IHookStateSetter, 
   IHookStateSetAction, 
   IHookStateResolvable 
-} from './createStateStore';
+} from './store';
