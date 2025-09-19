@@ -229,7 +229,7 @@ export default function createBaseRequest(baseOptions?: Options) {
       }
 
       
-      const { defaultMessageShower = alert } = { ...baseOptions, ...createOptions, ...options };
+      const { defaultMessageShower = console.error } = { ...baseOptions, ...createOptions, ...options };
 
 
 
