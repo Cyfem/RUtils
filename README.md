@@ -17,6 +17,7 @@ pnpm add rxtutils
 - **缓存管理** - 支持内存、localStorage、sessionStorage 和 IndexedDB 多种存储方式
 - **HTTP 请求** - 基于 axios 的请求封装，支持错误处理和缓存
 - **状态管理** - 轻量级的状态管理解决方案，支持 React Hook
+- **数据验证** - 基于装饰器的数据验证系统，支持多种验证规则
 - **TypeScript** - 完整的 TypeScript 类型支持
 
 ## 📚 模块介绍
@@ -198,7 +199,149 @@ const currentUser = userStore.get();
 userStore.set({ name: 'Jane Doe', email: 'jane@example.com', isLoggedIn: true });
 ```
 
-### 4. 状态计算器 (createStoreGetter)
+### 4. 数据验证 (Validator)
+
+基于装饰器的数据验证系统，提供多种验证规则和自定义验证能力。
+
+#### 基本用法
+
+```typescript
+import { BaseValidator, VString, VNumber, VRequired, VEmail, VMinLength } from 'rxtutils';
+
+// 创建验证模型
+class User extends BaseValidator {
+  @VString('用户名必须为字符串')
+  @(VRequired()('用户名不能为空'))
+  name?: string;
+
+  @VNumber('年龄必须为数字')
+  @(VRequired()('年龄不能为空'))
+  age?: number;
+
+  @VEmail('邮箱格式不正确')
+  @(VRequired()('邮箱不能为空'))
+  email?: string;
+
+  @(VMinLength(6)('密码长度不能少于6位'))
+  @(VRequired()('密码不能为空'))
+  password?: string;
+}
+
+// 使用验证
+const user = new User();
+user.name = '张三';
+user.age = 25;
+user.email = 'invalid-email'; // 无效的邮箱格式
+user.password = '123'; // 密码长度不足
+
+// 验证单个字段
+const emailErrors = user.validate('email');
+console.log(emailErrors); // [{ status: false, message: '邮箱格式不正确' }]
+
+// 验证所有字段
+const allErrors = user.validateAll();
+console.log(allErrors); // 返回所有验证错误
+```
+
+#### 内置验证装饰器
+
+```typescript
+// 基本类型验证
+@VString('必须为字符串')
+@VNumber('必须为数字')
+@VBoolean('必须为布尔值')
+@VArray('必须为数组')
+
+// 必填验证
+@(VRequired()('不能为空'))
+
+// 范围验证
+@(VMin(18)('必须大于等于18'))
+@(VMax(100)('必须小于等于100'))
+
+// 长度验证
+@(VMinLength(6)('长度不能少于6位'))
+@(VMaxLength(20)('长度不能超过20位'))
+
+// 格式验证
+@VEmail('邮箱格式不正确')
+@(VPattern(/^1[3-9]\d{9}$/)('手机号格式不正确'))
+```
+
+#### 自定义验证装饰器
+
+```typescript
+import { BaseValidator } from 'rxtutils';
+
+// 创建自定义验证装饰器
+const VCustom = BaseValidator.decoratorCreator(
+  (val) => {
+    // 自定义验证逻辑
+    return typeof val === 'string' && val.startsWith('custom-');
+  }
+);
+
+// 使用自定义验证装饰器
+class Product extends BaseValidator {
+  @VCustom('产品编码必须以 custom- 开头')
+  code?: string;
+}
+```
+
+#### 验证方法
+
+BaseValidator 类提供了两个主要的验证方法：
+
+```typescript
+// 验证单个字段
+validate(itemKey: string, itemAll: boolean = false): { status: boolean; message?: string }[] | null;
+
+// 验证多个或所有字段
+validateAll(itemAll: boolean = false, everyItem: boolean = false, order?: string[]): { status: boolean; message?: string }[] | null;
+```
+
+参数说明：
+
+- `itemKey`: 要验证的字段名
+- `itemAll`: 是否验证该字段的所有规则，为 true 时会验证所有规则，为 false 时遇到第一个失败的规则就停止
+- `everyItem`: 是否验证所有字段，为 true 时会验证所有字段，为 false 时遇到第一个失败的字段就停止
+- `order`: 验证字段的顺序，可以指定验证的字段名数组及其顺序
+
+使用示例：
+
+```typescript
+// 创建验证模型
+class LoginForm extends BaseValidator {
+  @VString('用户名必须为字符串')
+  @(VRequired()('用户名不能为空'))
+  @(VMinLength(3)('用户名长度不能少于3位'))
+  @(VMaxLength(20)('用户名长度不能超过20位'))
+  username?: string;
+
+  @(VRequired()('密码不能为空'))
+  @(VMinLength(6)('密码长度不能少于6位'))
+  password?: string;
+}
+
+const form = new LoginForm();
+form.username = 'ab'; // 长度不足
+form.password = '123456';
+
+// 验证单个字段的所有规则
+const usernameErrors = form.validate('username', true);
+console.log(usernameErrors); 
+// [{ status: false, message: '用户名长度不能少于3位' }]
+
+// 验证所有字段，每个字段遇到第一个错误就停止
+const allErrors = form.validateAll(false, true);
+console.log(allErrors);
+
+// 按指定顺序验证字段，并验证每个字段的所有规则
+const orderedErrors = form.validateAll(true, true, ['password', 'username']);
+console.log(orderedErrors);
+```
+
+### 5. 状态计算器 (createStoreGetter)
 
 为状态存储提供计算属性和派生状态。
 
