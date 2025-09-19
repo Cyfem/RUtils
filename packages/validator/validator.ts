@@ -1,20 +1,45 @@
+/**
+ * 验证器函数类型，接收任意值并返回验证结果
+ * @param val 需要验证的值
+ * @returns 包含验证状态和可选错误消息的对象
+ */
 type Validator = (val: any) => { status: boolean; message?: string };
+
+/**
+ * 验证器映射类型，用于存储字段名到验证器数组的映射
+ */
 type ValidatorMap = {
   [key: string]: Validator[];
 };
 
+/**
+ * 基础验证器类
+ * 提供字段验证功能，可通过装饰器为类属性添加验证规则
+ */
 export class BaseValidator {
-
+  /** 用于存储验证器映射的私有符号 */
   private __keySymbol: symbol = Symbol('key-description');
+  /** 用于存储验证器映射的索引签名 */
   [key: symbol]: ValidatorMap;
+  /** 用于存储类属性的索引签名 */
   [key: string]: any;
 
+  /**
+   * 构造函数
+   * 初始化验证器映射存储
+   */
   constructor() {
     this.__keySymbol = Symbol('key-description');
     this[this.__keySymbol] = {} as ValidatorMap;
   }
 
-  validate(itemKey: string, itemAll: boolean = false) {
+  /**
+   * 验证单个字段
+   * @param itemKey 要验证的字段名
+   * @param itemAll 是否验证所有规则，为true时会验证该字段的所有规则，为false时遇到第一个失败的规则就停止
+   * @returns 验证错误数组，如果没有错误则返回null
+   */
+  public validate(itemKey: string, itemAll: boolean = false) {
     const validatorMap = this[this.__keySymbol]
     const errors: ReturnType<Validator>[] = [];
     // 校验每个 key
@@ -35,7 +60,14 @@ export class BaseValidator {
     return null;
   }
   
-  validateAll(itemAll: boolean = false, everyItem: boolean = false, order?: string[]) {
+  /**
+   * 验证多个或所有字段
+   * @param itemAll 是否验证每个字段的所有规则，为true时会验证字段的所有规则，为false时遇到第一个失败的规则就停止
+   * @param everyItem 是否验证所有字段，为true时会验证所有字段，为false时遇到第一个失败的字段就停止
+   * @param order 验证字段的顺序，可以指定验证的字段名数组及其顺序
+   * @returns 验证错误数组，如果没有错误则返回null
+   */
+  public validateAll(itemAll: boolean = false, everyItem: boolean = false, order?: string[]) {
     const validatorMap = this[this.__keySymbol]
     const errors: ReturnType<Validator>[] = [];
     // 校验每个 key
@@ -62,7 +94,40 @@ export class BaseValidator {
     return null;
   }
 
-  static decoratorCreator = (
+  /**
+   * 装饰器创建器
+   * 用于创建属性验证装饰器的工厂函数
+   * 
+   * @param func 验证函数，接收属性值并返回布尔值表示验证结果
+   * @returns 返回一个接收错误消息的函数，该函数再返回实际的装饰器
+   * 
+   * @example
+   * // 创建一个验证字符串的装饰器
+   * const VString = BaseValidator.decoratorCreator(
+   *   (val) => typeof val === 'string' || val === undefined
+   * );
+   * 
+   * // 创建一个验证必填项的装饰器
+   * const VRequired = BaseValidator.decoratorCreator(
+   *   (val) => val !== undefined && val !== null && val !== ''
+   * );
+   * 
+   * // 在类中使用这些装饰器
+   * class User extends BaseValidator {
+   *   @VString('名称必须为字符串')
+   *   @(VRequired()('名称必须填写'))
+   *   name?: string;
+   * 
+   *   // 验证使用
+   *   validateName() {
+   *     return this.validate('name');
+   *   }
+   * }
+   * 
+   * const user = new User();
+   * console.log(user.validateName()); // 显示错误信息：名称必须填写
+   */
+  public static decoratorCreator = (
     func: (val: any, value: undefined, context: ClassFieldDecoratorContext<BaseValidator>) => boolean,
   ) => {
     return (message: ((val: any, value: undefined, context: ClassFieldDecoratorContext<BaseValidator>) => string) | string  = (val,value,context) => `${String(context.name)}格式错误`) => {
