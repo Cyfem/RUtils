@@ -8,6 +8,11 @@ export { default as createBaseRequest } from './request';
 /** 状态管理模块 */
 export { createStateStore } from './store';
 export { createStoreGetter, createStoreGetterMemo } from './store';
+
+export { BaseValidator } from "./validator";
+export { VRequired, VString, VNumber, VEmail, VMinLength, VArray, VBoolean, VPattern, VMaxLength, VMax, VMin } from './validator';
+
+
 /**
  * 缓存模块类型导出
  * 包含缓存接口、配置选项、存储映射和存储类型
@@ -38,6 +43,3 @@ export type {
   IHookStateResolvable 
 } from './store';
 
-
-export { BaseValidator } from "./validator";
-export { VRequired, VString, VNumber, VEmail, VMinLength, VArray, VBoolean, VPattern, VMaxLength, VMax, VMin } from './validator';
