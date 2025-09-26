@@ -1,13 +1,13 @@
-import axios, { AxiosResponse, AxiosRequestConfig, Method } from 'axios';
-import { at } from 'lodash';
+import axios, { AxiosResponse, AxiosRequestConfig, Method } from "axios";
+import { at } from "lodash";
 import {
   _defaultErrorCodeHandler,
   _defaultHttpErrorCodeHandler,
   _defaultOtherErrorCodeHandler,
-} from './defaultHandlers';
-import defaultEquals from '../defaultEquals';
-import Cache, { type StorageType } from '../cache';
-import RequestError,{type RequestErrorType} from './error';
+} from "./defaultHandlers";
+import defaultEquals from "../defaultEquals";
+import Cache, { type StorageType } from "../cache";
+import RequestError, { type RequestErrorType } from "./error";
 
 /**
  * 错误处理器返回类型
@@ -16,13 +16,13 @@ import RequestError,{type RequestErrorType} from './error';
 export type ErrorHandlerReturnType<D> = {
   /** 替换响应数据 */
   replaceResData?: D;
-  /** 
+  /**
    * 是否抛出错误
    * - true: 强制抛出错误
    * - false: 不抛出错误
    * - 'default': 使用默认错误处理逻辑
    */
-  throwError?: boolean | 'default';
+  throwError?: boolean | "default";
 };
 
 /**
@@ -33,38 +33,39 @@ export type ErrorHandlerReturnType<D> = {
 export interface Options<Params = any, Data = any> {
   /** 请求基础URL，默认为空字符串 */
   baseURL?: string;
-  /** 
+  /**
    * 是否抛出错误
-   * @default true 
+   * @default true
    */
   throwError?: boolean;
 
-  /** 
+  /**
    * 默认的消息展示函数
-   * @default window.alert 
+   * @default window.alert
    */
-  defaultMessageShower?:(message: string) => void;
+  defaultMessageShower?: (message: string) => void;
 
-  /** 
+  /**
    * 是否启用缓存功能
-   * @default false 
+   * @default false
    */
   enableCache?: boolean;
-  /** 
+  /**
    * 缓存键比较函数
    * @default defaultEquals 使用 JSON.stringify 进行比较
    */
   cacheKeyEquals?: (prev: Params, next: Params) => boolean;
-  /** 
+  /**
    * 是否将响应数据存入缓存
-   * @default false 
+   * @default false
    */
   cacheData?: boolean;
-  /** 
+  /**
    * 缓存时间（秒）
-   * @default 60 
+   * @default 60
    */
-  cacheTime?: number;/** 
+  cacheTime?: number;
+  /**
    * 缓存数据的存储类型
    * - localStorage: 使用浏览器本地存储，数据永久保存
    * - sessionStorage: 使用会话存储，关闭浏览器后清除
@@ -72,21 +73,22 @@ export interface Options<Params = any, Data = any> {
    * - 不填则仅在内存中缓存，页面刷新后清除
    */
   cacheDataInStorage?: StorageType;
-  /** 
+  /**
    * 缓存数据的键名
    * @default `${method}:${baseURL}${url}` 默认使用请求方法、基础URL和请求路径组合
    */
   cacheDataKey?: string;
-  /** 
+  /**
    * IndexedDB 数据库名称
-   * @default '__apiCacheDatabase__' 
+   * @default '__apiCacheDatabase__'
    */
   indexDBName?: string;
-  /** 
+  /**
    * 错误码在响应数据中的路径
-   * @default 'code' 
+   * @default 'code'
    */
-  errorCodePath?: string;  /** 
+  errorCodePath?: string;
+  /**
    * 错误码映射表
    * 可以配置错误码对应的错误信息或处理函数
    * @default {} 空对象，使用默认处理函数
@@ -98,7 +100,7 @@ export interface Options<Params = any, Data = any> {
         code: string,
         data: Data,
         res: AxiosResponse<Data>,
-        requestParam: RequestOptions<Params>,
+        requestParam: RequestOptions<Params>
       ) => ErrorHandlerReturnType<Data> | void)
   >;
   /**
@@ -108,14 +110,15 @@ export interface Options<Params = any, Data = any> {
   defaultErrorCodeHandler?: (
     code: string,
     data: Data,
-    res: AxiosResponse<Data>,
-  ) => ErrorHandlerReturnType<Data> | void;  /** 
+    res: AxiosResponse<Data>
+  ) => Promise<ErrorHandlerReturnType<Data> | void>;
+  /**
    * 成功状态的错误码列表
-   * @default ['0', '200'] 
+   * @default ['0', '200']
    */
   successCodes?: string[];
 
-  /** 
+  /**
    * HTTP 错误码映射表
    * 可以配置 HTTP 状态码对应的错误信息或处理函数
    * @default {} 空对象，使用默认处理函数
@@ -126,8 +129,8 @@ export interface Options<Params = any, Data = any> {
     | ((
         code: number,
         res: AxiosResponse<Data>,
-        requestParam: RequestOptions<Params>,
-      ) => ErrorHandlerReturnType<Data> | void)
+        requestParam: RequestOptions<Params>
+      ) => Promise<ErrorHandlerReturnType<Data> | void>)
   >;
   /**
    * 默认 HTTP 错误码处理函数
@@ -135,16 +138,18 @@ export interface Options<Params = any, Data = any> {
    */
   defaultHttpErrorCodeHandler?: (
     code: number,
-    error: any,
-  ) => ErrorHandlerReturnType<Data> | void;
+    error: any
+  ) => Promise<ErrorHandlerReturnType<Data> | void>;
   /**
    * 其他错误处理函数
    * 处理非 HTTP 错误和非业务错误码的错误
    */
-  otherErrorHandler?: (error: any) => ErrorHandlerReturnType<Data> | void;
+  otherErrorHandler?: (
+    error: any
+  ) => Promise<ErrorHandlerReturnType<Data> | void>;
   axiosOptions?: Omit<
     AxiosRequestConfig<Params>,
-    'method' | 'url' | 'params' | 'data'
+    "method" | "url" | "params" | "data"
   >;
 }
 
@@ -186,7 +191,7 @@ export default function createBaseRequest(baseOptions?: Options) {
    */
   return function createRequest<Param, Data extends Record<any, any>>(
     requestOptions: RequestOptions<Param>,
-    createOptions?: Omit<Options<Param, Data>, 'baseURL'>,
+    createOptions?: Omit<Options<Param, Data>, "baseURL">
   ) {
     const { method, url } = { ...requestOptions };
 
@@ -196,7 +201,7 @@ export default function createBaseRequest(baseOptions?: Options) {
       cacheDataInStorage,
       cacheKeyEquals = defaultEquals,
       cacheTime,
-      indexDBName = '__apiCacheDatabase__',
+      indexDBName = "__apiCacheDatabase__",
     } = {
       ...baseOptions,
       ...createOptions,
@@ -207,15 +212,15 @@ export default function createBaseRequest(baseOptions?: Options) {
       cacheDataKey,
       cacheTime,
       indexDBName,
-      cacheKeyEquals,
+      cacheKeyEquals
     );
 
     function request(
-      requestParam?: Omit<RequestOptions<Param>, 'url' | 'method'>,
+      requestParam?: Omit<RequestOptions<Param>, "url" | "method">,
       options?: Omit<
         Options<Param, Data>,
-        'baseURL' | 'cacheDataKey' | 'cacheDataInStorage' | 'cacheKeyEquals'
-      >,
+        "baseURL" | "cacheDataKey" | "cacheDataInStorage" | "cacheKeyEquals"
+      >
     ): Promise<Data> {
       const {
         method,
@@ -223,26 +228,36 @@ export default function createBaseRequest(baseOptions?: Options) {
         data = {} as Param,
         params = {} as Param,
       } = { ...requestOptions, ...requestParam };
-      let requestDataOrParams = params
-      if(method.toLowerCase() === 'post'){
-        requestDataOrParams = data
+      let requestDataOrParams = params;
+      if (method.toLowerCase() === "post") {
+        requestDataOrParams = data;
       }
 
-      
-      const { defaultMessageShower = console.error } = { ...baseOptions, ...createOptions, ...options };
-
-
+      const { defaultMessageShower = console.error } = {
+        ...baseOptions,
+        ...createOptions,
+        ...options,
+      };
 
       const {
         enableCache = false,
         cacheData = false,
-        defaultErrorCodeHandler = _defaultErrorCodeHandler.bind(null, defaultMessageShower),
-        defaultHttpErrorCodeHandler = _defaultHttpErrorCodeHandler.bind(null, defaultMessageShower),
-        otherErrorHandler = _defaultOtherErrorCodeHandler.bind(null, defaultMessageShower),
-        errorCodePath = 'code',
+        defaultErrorCodeHandler = _defaultErrorCodeHandler.bind(
+          null,
+          defaultMessageShower
+        ),
+        defaultHttpErrorCodeHandler = _defaultHttpErrorCodeHandler.bind(
+          null,
+          defaultMessageShower
+        ),
+        otherErrorHandler = _defaultOtherErrorCodeHandler.bind(
+          null,
+          defaultMessageShower
+        ),
+        errorCodePath = "code",
         cacheTime = 60,
         errorCodeMap = {},
-        successCodes = ['0', '200'],
+        successCodes = ["0", "200"],
         httpErrorCodeMap = {},
         axiosOptions = {},
         throwError = true,
@@ -262,7 +277,7 @@ export default function createBaseRequest(baseOptions?: Options) {
           ...axiosOptions,
         })
         .then(
-          (res) => {
+          async (res) => {
             const errorCode = String(at(res.data, errorCodePath));
             if (successCodes.includes(errorCode)) {
               if (cacheData) {
@@ -274,16 +289,19 @@ export default function createBaseRequest(baseOptions?: Options) {
             const { [errorCode]: customHandler = defaultErrorCodeHandler } =
               errorCodeMap;
 
-            const err = new RequestError('服务端错误','server',res);
+            const err = new RequestError("服务端错误", "server", res);
 
-            if (typeof customHandler === 'string') {
+            if (typeof customHandler === "string") {
               defaultMessageShower(customHandler);
             } else {
               const {
                 replaceResData = res.data,
-                throwError: handlerThrowError = 'default',
-              } = <ErrorHandlerReturnType<Data>>(
-                Object(customHandler(errorCode, res.data, res, {...requestOptions, ...requestParam}))
+                throwError: handlerThrowError = "default",
+              } = <ErrorHandlerReturnType<Data>>Object(
+                (await customHandler(errorCode, res.data, res, {
+                  ...requestOptions,
+                  ...requestParam,
+                })) as Promise<ErrorHandlerReturnType<Data>>
               );
               res.data = replaceResData;
               switch (handlerThrowError) {
@@ -302,7 +320,7 @@ export default function createBaseRequest(baseOptions?: Options) {
 
             return res.data;
           },
-          (error) => {
+          async (error) => {
             if (error.response) {
               // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
               let resData = error;
@@ -311,16 +329,19 @@ export default function createBaseRequest(baseOptions?: Options) {
                   customHandler = defaultHttpErrorCodeHandler,
               } = httpErrorCodeMap;
 
-              const err = new RequestError('服务端错误', 'http', error);
+              const err = new RequestError("服务端错误", "http", error);
 
-              if (typeof customHandler === 'string') {
+              if (typeof customHandler === "string") {
                 defaultMessageShower(customHandler);
               } else {
                 const {
                   replaceResData = error,
-                  throwError: handlerThrowError = 'default',
-                } = <ErrorHandlerReturnType<Data>>(
-                  Object(customHandler(error.response.status, error,{...requestOptions, ...requestParam}))
+                  throwError: handlerThrowError = "default",
+                } = <ErrorHandlerReturnType<Data>>Object(
+                  (await customHandler(error.response.status, error, {
+                    ...requestOptions,
+                    ...requestParam,
+                  })) as Promise<ErrorHandlerReturnType<Data>>
                 );
 
                 resData = replaceResData;
@@ -343,15 +364,19 @@ export default function createBaseRequest(baseOptions?: Options) {
             } else {
               let resData = error;
 
-              const err = new RequestError('服务端错误','http', error);
-              err.type = 'http';
+              const err = new RequestError("服务端错误", "http", error);
+              err.type = "http";
               err.data = error;
 
               const {
                 replaceResData = error,
-                throwError: handlerThrowError = 'default',
+                throwError: handlerThrowError = "default",
               } = <ErrorHandlerReturnType<Data>>(
-                Object(otherErrorHandler(error))
+                Object(
+                  (await otherErrorHandler(error)) as Promise<
+                    ErrorHandlerReturnType<Data>
+                  >
+                )
               );
 
               resData = replaceResData;
@@ -371,7 +396,7 @@ export default function createBaseRequest(baseOptions?: Options) {
 
               return resData as Data;
             }
-          },
+          }
         );
     }
     request.clearCache = () => {
@@ -381,4 +406,4 @@ export default function createBaseRequest(baseOptions?: Options) {
   };
 }
 
-export { type RequestError,type RequestErrorType };
+export { type RequestError, type RequestErrorType };
