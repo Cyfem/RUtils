@@ -16,7 +16,7 @@ const packagesPaths = [
 export default [
   // JS 构建
   {
-    input,
+    input:[...input,...packagesPaths],
     plugins: [
       typescript({})
     ],
