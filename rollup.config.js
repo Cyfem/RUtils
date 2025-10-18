@@ -2,7 +2,16 @@
 // rollup.config.ts
 import dts from 'rollup-plugin-dts';
 import typescript from '@rollup/plugin-typescript';
-const input = 'packages/index.ts';
+const input = [
+  'packages/index.ts',
+];
+
+const packagesPaths = [
+  'packages/validator/index.ts',
+  'packages/store/index.ts',
+  'packages/request/index.ts',
+  'packages/cache/index.ts',
+]
 
 export default [
   // JS 构建
@@ -13,14 +22,14 @@ export default [
     ],
     output: [
       {
-        dir: 'dist/es',
+        dir: 'es',
         format: 'es',
         preserveModules: true,
         preserveModulesRoot: 'packages',
         entryFileNames: '[name].mjs'
       },
       {
-        dir: 'dist/cjs',
+        dir: 'cjs',
         format: 'cjs',
         preserveModules: true,
         preserveModulesRoot: 'packages',
@@ -31,14 +40,44 @@ export default [
   },
   // 类型定义
   {
-  input: input,
-  output: {
-    dir: 'dist/types', // 类型声明输出目录
-    format: 'es',
-    preserveModules: true, // 保留模块结构拆分
-    preserveModulesRoot: 'packages',
-    entryFileNames: '[name].d.ts', // 保持和源码文件名对应
-  },
+  input,
+  output: [
+    {
+      dir: 'es', // 类型声明输出目录
+      format: 'es',
+      preserveModules: true, // 保留模块结构拆分
+      preserveModulesRoot: 'packages',
+      entryFileNames: '[name].d.ts', // 保持和源码文件名对应
+    },
+    {
+      dir: 'cjs', // 类型声明输出目录
+      format: 'cjs',
+      preserveModules: true, // 保留模块结构拆分
+      preserveModulesRoot: 'packages',
+      entryFileNames: '[name].d.ts', // 保持和源码文件名对应
+    },
+  ],
   plugins: [dts()],
-  }
+  },
+
+  ...packagesPaths.map(packagePath => ({
+  input: packagePath,
+  output: [
+    {
+      dir: 'es', // 类型声明输出目录
+      format: 'es',
+      preserveModules: true, // 保留模块结构拆分
+      preserveModulesRoot: 'packages',
+      entryFileNames: '[name].d.ts', // 保持和源码文件名对应
+    },
+    {
+      dir: 'cjs', // 类型声明输出目录
+      format: 'cjs',
+      preserveModules: true, // 保留模块结构拆分
+      preserveModulesRoot: 'packages',
+      entryFileNames: '[name].d.ts', // 保持和源码文件名对应
+    },
+  ],
+  plugins: [dts()],
+  }))
 ];

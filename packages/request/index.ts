@@ -1,11 +1,11 @@
 import axios, { AxiosResponse, AxiosRequestConfig, Method } from "axios";
-import { at } from "lodash";
+import at from "lodash-es/at";
 import {
   _defaultErrorCodeHandler,
   _defaultHttpErrorCodeHandler,
   _defaultOtherErrorCodeHandler,
 } from "./defaultHandlers";
-import defaultEquals from "../defaultEquals";
+import defaultEquals from "../_utils/defaultEquals";
 import Cache, { type StorageType } from "../cache";
 import RequestError, { type RequestErrorType } from "./error";
 

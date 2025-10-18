@@ -4,3 +4,5 @@ pacage-lock.json
 .DS_Store
 dist
 .vscode
+es
+cjs
