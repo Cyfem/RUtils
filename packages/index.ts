@@ -9,7 +9,6 @@ export { default as createBaseRequest } from "./request";
 export { createStateStore } from "./store";
 export { createStoreGetter, createStoreGetterMemo } from "./store";
 
-export { BaseValidator } from "./validator";
 export {
   VRequired,
   VString,
@@ -22,6 +21,7 @@ export {
   VMaxLength,
   VMax,
   VMin,
+  BaseValidator,
 } from "./validator";
 
 /**
