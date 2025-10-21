@@ -294,10 +294,10 @@ BaseValidator 类提供了两个主要的验证方法：
 
 ```typescript
 // 验证单个字段
-validate(itemKey: string, itemAll: boolean = false): { status: boolean; message?: string }[] | null;
+validate(itemKey: string, itemAll: boolean = false): string[] | null;
 
 // 验证多个或所有字段
-validateAll(itemAll: boolean = false, everyItem: boolean = false, order?: string[]): { status: boolean; message?: string }[] | null;
+validateAll(itemAll: boolean = false, everyItem: boolean = false, order?: string[]): string[] | null;
 ```
 
 参数说明：
