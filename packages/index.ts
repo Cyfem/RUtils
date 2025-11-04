@@ -53,3 +53,5 @@ export type {
   IHookStateSetAction,
   IHookStateResolvable,
 } from "./store";
+
+export { useCombineControlValue } from './hooks'

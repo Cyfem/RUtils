@@ -11,6 +11,7 @@ const packagesPaths = [
   'packages/store/index.ts',
   'packages/request/index.ts',
   'packages/cache/index.ts',
+  'packages/hooks/index.ts',
 ]
 
 export default [
