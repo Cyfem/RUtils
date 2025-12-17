@@ -15,14 +15,14 @@ type Validator = (val: any) => {
 type ValidatorMap = {
   [key: string]: Validator[];
 };
-
+const KEY_SYMBOL = Symbol("key-description");
 /**
  * 基础验证器类
  * 提供字段验证功能，可通过装饰器为类属性添加验证规则
  */
 export class BaseValidator {
   /** 用于存储验证器映射的私有符号 */
-  private __keySymbol: symbol = Symbol("key-description");
+  private __keySymbol: symbol = KEY_SYMBOL;
   /** 用于存储验证器映射的索引签名 */
   [key: symbol]: ValidatorMap;
   /** 用于存储类属性的索引签名 */
@@ -33,7 +33,6 @@ export class BaseValidator {
    * 初始化验证器映射存储
    */
   constructor() {
-    this.__keySymbol = Symbol("key-description");
     this[this.__keySymbol] = {} as ValidatorMap;
   }
 
