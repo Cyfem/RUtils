@@ -101,7 +101,7 @@ export interface Options<Params = any, Data = any> {
         data: Data,
         res: AxiosResponse<Data>,
         requestParam: RequestOptions<Params>
-      ) => ErrorHandlerReturnType<Data> | void)
+      ) => ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>)
   >;
   /**
    * 默认错误码处理函数
@@ -111,7 +111,7 @@ export interface Options<Params = any, Data = any> {
     code: string,
     data: Data,
     res: AxiosResponse<Data>
-  ) => Promise<ErrorHandlerReturnType<Data> | void>;
+  ) => ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>;
   /**
    * 成功状态的错误码列表
    * @default ['0', '200']
@@ -130,7 +130,7 @@ export interface Options<Params = any, Data = any> {
         code: number,
         res: AxiosResponse<Data>,
         requestParam: RequestOptions<Params>
-      ) => Promise<ErrorHandlerReturnType<Data> | void>)
+      ) => (ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>))
   >;
   /**
    * 默认 HTTP 错误码处理函数
@@ -139,18 +139,24 @@ export interface Options<Params = any, Data = any> {
   defaultHttpErrorCodeHandler?: (
     code: number,
     error: any
-  ) => Promise<ErrorHandlerReturnType<Data> | void>;
+  ) => ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>;
   /**
    * 其他错误处理函数
    * 处理非 HTTP 错误和非业务错误码的错误
    */
   otherErrorHandler?: (
     error: any
-  ) => Promise<ErrorHandlerReturnType<Data> | void>;
+  ) => ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>;
   axiosOptions?: Omit<
     AxiosRequestConfig<Params>,
     "method" | "url" | "params" | "data"
   >;
+
+  // 请求拦截中间件，可支持更改 axiosOptions， requestOptions
+  requestMiddlewares?: ((options: Options<Params, Data>, requestOptions: RequestOptions<Params>) => Promise<{axiosOptions?: Options<Params, Data>["axiosOptions"],requestOptions?: RequestOptions<Params>}> | {axiosOptions: Options<Params, Data>["axiosOptions"],requestOptions?: RequestOptions<Params>})[]
+
+  // 重试次数，仅出错时重试，如果都失败则抛出最后一次的异常(如果配置了抛出异常的话)
+  retryTimes?: number
 }
 
 /**
@@ -215,19 +221,32 @@ export default function createBaseRequest(baseOptions?: Options) {
       cacheKeyEquals
     );
 
-    function request(
+    async function request(
       requestParam?: Omit<RequestOptions<Param>, "url" | "method">,
       options?: Omit<
         Options<Param, Data>,
         "baseURL" | "cacheDataKey" | "cacheDataInStorage" | "cacheKeyEquals"
       >
     ): Promise<Data> {
+      let { requestMiddlewares = [], axiosOptions: finalAxiosOptions = {} } = {
+        ...baseOptions,
+        ...createOptions,
+        ...options,
+      };
+      let finalRequestOptions = { ...requestOptions, ...requestParam };
+
+      for(const middleware of requestMiddlewares){
+        const {axiosOptions: nextAxiosOptions = finalAxiosOptions, requestOptions: nextRequestOptions = finalRequestOptions} = await middleware(finalAxiosOptions, finalRequestOptions);
+        finalAxiosOptions = nextAxiosOptions
+        finalRequestOptions = nextRequestOptions
+      }
+
       const {
         method,
         url,
         data = {} as Param,
         params = {} as Param,
-      } = { ...requestOptions, ...requestParam };
+      } = finalRequestOptions;
       let requestDataOrParams = params;
       if (method.toLowerCase() === "post") {
         requestDataOrParams = data;
@@ -259,8 +278,9 @@ export default function createBaseRequest(baseOptions?: Options) {
         errorCodeMap = {},
         successCodes = ["0", "200"],
         httpErrorCodeMap = {},
-        axiosOptions = {},
+        // axiosOptions = {},
         throwError = true,
+        retryTimes = 0
       } = { ...baseOptions, ...createOptions, ...options };
       if (enableCache) {
         const cacheItem = cache.getCache(requestDataOrParams);
@@ -268,13 +288,19 @@ export default function createBaseRequest(baseOptions?: Options) {
           return Promise.resolve(cacheItem);
         }
       }
+      function retry(){
+        if(retryTimes > 0){
+          return request(requestParam, {...options,retryTimes: retryTimes - 1})
+        }
+        return null;
+      }
       return instance
         .request<Data, AxiosResponse<Data>, Param>({
           method,
           url,
           data,
           params,
-          ...axiosOptions,
+          ...finalAxiosOptions,
         })
         .then(
           async (res) => {
@@ -285,6 +311,7 @@ export default function createBaseRequest(baseOptions?: Options) {
               }
               return res.data;
             }
+            // 不在成功 code 中，意味着请求失败
 
             const { [errorCode]: customHandler = defaultErrorCodeHandler } =
               errorCodeMap;
@@ -293,6 +320,9 @@ export default function createBaseRequest(baseOptions?: Options) {
 
             if (typeof customHandler === "string") {
               defaultMessageShower(customHandler);
+              
+              const retryTask = retry();
+              if(retryTask) return retryTask
             } else {
               const {
                 replaceResData = res.data,
@@ -303,6 +333,10 @@ export default function createBaseRequest(baseOptions?: Options) {
                   ...requestParam,
                 })) as Promise<ErrorHandlerReturnType<Data>>
               );
+              
+              const retryTask = retry();
+              if(retryTask) return retryTask
+
               res.data = replaceResData;
               switch (handlerThrowError) {
                 case true:
@@ -333,6 +367,10 @@ export default function createBaseRequest(baseOptions?: Options) {
 
               if (typeof customHandler === "string") {
                 defaultMessageShower(customHandler);
+                
+                const retryTask = retry();
+                if(retryTask) return retryTask
+
               } else {
                 const {
                   replaceResData = error,
@@ -343,6 +381,9 @@ export default function createBaseRequest(baseOptions?: Options) {
                     ...requestParam,
                   })) as Promise<ErrorHandlerReturnType<Data>>
                 );
+                
+                const retryTask = retry();
+                if(retryTask) return retryTask
 
                 resData = replaceResData;
 
@@ -378,6 +419,10 @@ export default function createBaseRequest(baseOptions?: Options) {
                   >
                 )
               );
+              
+              
+              const retryTask = retry();
+              if(retryTask) return retryTask
 
               resData = replaceResData;
 
