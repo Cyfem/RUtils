@@ -68,9 +68,9 @@ export class BaseValidator {
 
   /**
    * 验证多个或所有字段
-   * @param order 验证字段的顺序，可以指定验证的字段名数组及其顺序
-   * @param itemAll 是否验证每个字段的所有规则，为true时会验证字段的所有规则，为false时遇到第一个失败的规则就停止
-   * @param everyItem 是否验证所有字段，为true时会验证所有字段，为false时遇到第一个失败的字段就停止
+   * @param order 验证字段的顺序，可以指定验证的字段名数组及其顺序，默认验证所有字段，按对象定义顺序
+   * @param itemAll 是否验证每个字段的所有规则，为true时会验证字段的所有规则，为false时遇到第一个失败的规则就停止，默认为 false
+   * @param everyItem 是否验证所有字段，为true时会验证所有字段，为false时遇到第一个失败的字段就停止，默认为 false
    * @returns 验证错误数组，如果没有错误则返回null
    */
   public validateAll(
@@ -89,15 +89,16 @@ export class BaseValidator {
       for (const fn of fns) {
         const res = fn(value);
         if (!res.status) {
-          if (Array.isArray(errors[res.name])) {
-            errors[res.name].push(res.message);
+          // 出现错误
+          if (Array.isArray(errors[key])) {
+            errors[key].push(res.message);
           } else {
-            errors[res.name] = [res.message];
+            errors[key] = [res.message];
           }
           if (!itemAll) break;
         }
       }
-      if (!everyItem) {
+      if (errors[key] && !everyItem) {
         break;
       }
     }
