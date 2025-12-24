@@ -157,6 +157,22 @@ export interface Options<Params = any, Data = any> {
 
   // 重试次数，仅出错时重试，如果都失败则抛出最后一次的异常(如果配置了抛出异常的话)
   retryTimes?: number
+
+  /**
+   * 请求参数或数据转换函数
+   * 可以在发送请求前对参数或数据进行处理
+   * @param paramsOrData 请求参数或数据
+   * @returns 处理后的参数或数据
+   */
+  requestParamsOrDataTransfer?: (paramsOrData: Params) => any
+
+  /**
+   * 响应数据转换函数
+   * 可以在接收响应数据后对数据进行处理
+   * @param data 响应数据
+   * @returns 处理后的响应数据
+   */
+  responseTransfer?: (data: any) => Data
 }
 
 /**
@@ -228,15 +244,16 @@ export default function createBaseRequest(baseOptions?: Options) {
         "baseURL" | "cacheDataKey" | "cacheDataInStorage" | "cacheKeyEquals"
       >
     ): Promise<Data> {
-      let { requestMiddlewares = [], axiosOptions: finalAxiosOptions = {} } = {
+      const mergedOptions = {
         ...baseOptions,
         ...createOptions,
         ...options,
-      };
+      } as Options<Param, Data>
+      let { requestMiddlewares = [], axiosOptions: finalAxiosOptions = {}, requestParamsOrDataTransfer, responseTransfer } = mergedOptions
       let finalRequestOptions = { ...requestOptions, ...requestParam };
 
       for(const middleware of requestMiddlewares){
-        const {axiosOptions: nextAxiosOptions = finalAxiosOptions, requestOptions: nextRequestOptions = finalRequestOptions} = await middleware(finalAxiosOptions, finalRequestOptions);
+        const {axiosOptions: nextAxiosOptions = finalAxiosOptions, requestOptions: nextRequestOptions = finalRequestOptions} = await middleware({...mergedOptions,axiosOptions: finalAxiosOptions}, finalRequestOptions);
         finalAxiosOptions = nextAxiosOptions
         finalRequestOptions = nextRequestOptions
       }
@@ -298,18 +315,20 @@ export default function createBaseRequest(baseOptions?: Options) {
         .request<Data, AxiosResponse<Data>, Param>({
           method,
           url,
-          data,
-          params,
+          data: data ?? (requestParamsOrDataTransfer ? requestParamsOrDataTransfer(data) : data),
+          params: params ?? (requestParamsOrDataTransfer ? requestParamsOrDataTransfer(params) : params),
           ...finalAxiosOptions,
         })
         .then(
           async (res) => {
             const errorCode = String(at(res.data, errorCodePath));
+            let finalData: Data = responseTransfer ? responseTransfer(res.data) as Data : res.data;
             if (successCodes.includes(errorCode)) {
+
               if (cacheData) {
-                cache.setCache(requestDataOrParams, res.data, { cacheTime });
+                cache.setCache(requestDataOrParams, finalData, { cacheTime });
               }
-              return res.data;
+              return finalData;
             }
             // 不在成功 code 中，意味着请求失败
 
