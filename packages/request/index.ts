@@ -198,10 +198,9 @@ export interface RequestOptions<Param> {
 export default function createBaseRequest(baseOptions?: Options) {
   const { baseURL } = Object(baseOptions);
 
-  // 创建新的 Axios 实例并配置基础URL和跨域凭证
+  // 创建新的 Axios 实例并配置基础URL
   const instance = axios.create({
     baseURL: baseURL,
-    withCredentials: true,
   });
   /**
    * 创建请求函数
