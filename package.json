@@ -10,7 +10,7 @@
     "cjs"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite serve playground --config playground/vite.config.ts",
     "build": "pnpm clean && rollup -c",
     "clean": "rm -rf es cjs",
     "publishNpm": "npm publish --registry https://registry.npmjs.org",
@@ -24,7 +24,6 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
     "react-dom": "^19.2.3",
-    "react-router": "^7.11.0",
     "rollup": "^4.41.1",
     "rollup-plugin-dts": "^6.2.1",
     "typescript": "^5.8.3",
