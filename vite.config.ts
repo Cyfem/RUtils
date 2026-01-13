@@ -30,7 +30,7 @@ const externals = [
 export default defineConfig({
   plugins: [
     dts({
-      outDir: ['es', 'cjs'],
+      outDir: 'es',
       include: ['packages/**/*.ts'],
       entryRoot: 'packages',
     })
