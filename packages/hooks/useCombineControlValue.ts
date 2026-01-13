@@ -26,24 +26,32 @@ export function useCombineControlValue<V, R extends (...args: any[]) => any>(opt
  * @param param onChange 值改变时的回调
  * @returns value: 组件应该采用的值，onChange：值改变时的回调，处理非受控值与向父组件传递值的逻辑
  */
-export function useCombineControlValue({props, valueKey = 'value', defaultValue, onChange}, resolveFn?){
-  const {[valueKey]: value} = props;
+export function useCombineControlValue<V, R extends (...args: any[]) => any>(
+  {
+    props,
+    valueKey = 'value',
+    defaultValue,
+    onChange
+  }: UseCombineControlValueOptions<V> & { onChange?: (...args: any[]) => void },
+  resolveFn?: (...args: Parameters<R>) => V
+): any {
+  const { [valueKey]: value } = props;
   const hasValue = Object.prototype.hasOwnProperty.call(props, valueKey);
 
-  const [internalValue, setInternalValue] = useState(value ?? defaultValue)
-  
-  const handleChange = useCallback((...params) => {
-    let realNextVal;
+  const [internalValue, setInternalValue] = useState<V | undefined>(value ?? defaultValue);
 
-    if(typeof resolveFn === 'function'){
-      realNextVal = resolveFn(...params);
-    }else{
+  const handleChange = useCallback((...params: any[]) => {
+    let realNextVal: any;
+
+    if (typeof resolveFn === 'function') {
+      realNextVal = resolveFn(...(params as Parameters<R>));
+    } else {
       realNextVal = params[0];
     }
 
     setInternalValue(realNextVal);
-    onChange?.(...params);
-  }, [onChange, resolveFn])
+    (onChange as any)?.(...params);
+  }, [onChange, resolveFn]);
 
   const finalValue = useMemo(() => {
     if(hasValue) return value

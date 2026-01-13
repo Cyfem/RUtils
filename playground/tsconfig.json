@@ -22,6 +22,11 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "rxtutils": ["../packages/index.ts"],
+      "rxtutils/*": ["../packages/*/index.ts"]
+    }
   },
   "include": ["src"],
 }

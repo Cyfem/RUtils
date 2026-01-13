@@ -52,6 +52,7 @@ export default [
     ],
     plugins: [
       typescript({
+        tsconfig: './tsconfig.json',
         declaration: false, // 类型声明由 dts 插件单独处理
       }),
     ],

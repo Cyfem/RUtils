@@ -7,7 +7,16 @@
     "moduleResolution": "bundler",
     "target": "ES2020",
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "rxtutils": ["packages/index.ts"],
+      "rxtutils/*": ["packages/*/index.ts"]
+    },
+    "noEmit": false,
+    "declaration": false,
+    "emitDeclarationOnly": false
   },
-  "include": ["packages", "playground"]
+  "include": ["packages"],
+  "exclude": ["playground", "**/_utils/**"]
 }

@@ -56,7 +56,7 @@ export class BaseValidator {
     for (const validator of validators) {
       const res = validator(this[itemKey]);
       if (!res.status) {
-        errors.push(res.message);
+        errors.push(res.message || `${itemKey} error`);
         if (!itemAll) break;
       }
     }
@@ -90,10 +90,11 @@ export class BaseValidator {
         const res = fn(value);
         if (!res.status) {
           // 出现错误
+          const msg = res.message || `${key} error`;
           if (Array.isArray(errors[key])) {
-            errors[key].push(res.message);
+            errors[key].push(msg);
           } else {
-            errors[key] = [res.message];
+            errors[key] = [msg];
           }
           if (!itemAll) break;
         }
