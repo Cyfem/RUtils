@@ -28,11 +28,13 @@ export default class RequestError<Data = any> extends Error {
   constructor(
     message: string,
     type: RequestErrorType,
+    code: string,
     data?: Data
   ) {
     super(message);
     this.name = 'RequestError';
     this.type = type;
+    this.code = code;
     this.data = data;
   }
 }

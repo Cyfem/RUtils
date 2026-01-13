@@ -334,7 +334,7 @@ export default function createBaseRequest(baseOptions?: Options) {
             const { [errorCode]: customHandler = defaultErrorCodeHandler } =
               errorCodeMap;
 
-            const err = new RequestError("服务端错误", "server", res);
+            const err = new RequestError("服务端错误", "server", errorCode, res);
 
             if (typeof customHandler === "string") {
               defaultMessageShower(customHandler);
@@ -381,7 +381,7 @@ export default function createBaseRequest(baseOptions?: Options) {
                   customHandler = defaultHttpErrorCodeHandler,
               } = httpErrorCodeMap;
 
-              const err = new RequestError("服务端错误", "http", error);
+              const err = new RequestError("服务端错误", "http", String(error.response.status), error);
 
               if (typeof customHandler === "string") {
                 defaultMessageShower(customHandler);
@@ -423,9 +423,7 @@ export default function createBaseRequest(baseOptions?: Options) {
             } else {
               let resData = error;
 
-              const err = new RequestError("服务端错误", "http", error);
-              err.type = "http";
-              err.data = error;
+              const err = new RequestError("服务端错误", "http", "UNKNOWN", error);
 
               const {
                 replaceResData = error,

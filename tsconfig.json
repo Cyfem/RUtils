@@ -4,10 +4,11 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "module": "ESNext",
-    "moduleResolution": "bundler",
-    "target": "ES2020",
+    "moduleResolution": "node",
+    "target": "ES2022",
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "experimentalDecorators": true
   },
-  "include": ["packages", "playground"]
+  "include": ["packages"]
 }

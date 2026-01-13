@@ -2,6 +2,16 @@
 // rollup.config.ts
 import dts from 'rollup-plugin-dts';
 import typescript from '@rollup/plugin-typescript';
+
+const externals = [
+  'react',
+  'axios',
+  /^lodash-es(\/|$)/,
+  'moment',
+  'tslib',
+  /^node:.*/
+]
+
 const input = [
   'packages/index.ts',
 ];
@@ -37,7 +47,7 @@ export default [
         entryFileNames: '[name].cjs'
       }
     ],
-    external: [/node_modules/,"react","tslib"] // 避免将依赖打包进来
+    external: externals
   },
   // 类型定义
   {

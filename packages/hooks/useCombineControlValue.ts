@@ -26,13 +26,16 @@ export function useCombineControlValue<V, R extends (...args: any[]) => any>(opt
  * @param param onChange 值改变时的回调
  * @returns value: 组件应该采用的值，onChange：值改变时的回调，处理非受控值与向父组件传递值的逻辑
  */
-export function useCombineControlValue({props, valueKey = 'value', defaultValue, onChange}, resolveFn?){
+export function useCombineControlValue<V>(
+  {props, valueKey = 'value', defaultValue, onChange}: UseCombineControlValueOptions<V>,
+  resolveFn?: (...args: any[]) => V
+) {
   const {[valueKey]: value} = props;
   const hasValue = Object.prototype.hasOwnProperty.call(props, valueKey);
 
   const [internalValue, setInternalValue] = useState(value ?? defaultValue)
-  
-  const handleChange = useCallback((...params) => {
+
+  const handleChange = useCallback((...params: any[]) => {
     let realNextVal;
 
     if(typeof resolveFn === 'function'){
