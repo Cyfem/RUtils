@@ -55,3 +55,5 @@ export type {
 } from "./store";
 
 export { useCombineControlValue } from './hooks'
+
+export { downloadBlob } from './downloadBlob';

@@ -36,6 +36,11 @@
       "import": "./es/validator/index.mjs",
       "require": "./cjs/validator/index.cjs"
     },
+    "./downloadBlob": {
+      "types": "./es/downloadBlob.d.ts",
+      "import": "./es/downloadBlob.mjs",
+      "require": "./cjs/downloadBlob.cjs"
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -45,7 +50,7 @@
   ],
   "scripts": {
     "dev": "vite serve playground --config playground/vite.config.ts",
-    "build": "pnpm clean && rollup -c",
+    "build": "pnpm clean && vite build",
     "clean": "rimraf es cjs",
     "publishNpm": "npm publish --registry https://registry.npmjs.org",
     "loginNpm": "npm login --registry https://registry.npmjs.org"
@@ -61,13 +66,13 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
     "babel-plugin-react-compiler": "^1.0.0",
-    "fast-glob": "^3.3.3",
     "react-dom": "^19.2.3",
     "rimraf": "^6.1.2",
     "rollup": "^4.55.1",
     "rollup-plugin-dts": "^6.3.0",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4"
   },
   "peerDependencies": {
     "react": "^19.2.3"
