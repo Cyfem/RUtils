@@ -12,6 +12,12 @@ yarn add rxtutils
 pnpm add rxtutils
 ```
 
+也支持按需导入子模块（如 `rxtutils/cache`, `rxtutils/hooks` 等）。
+
+### ⚠️ 环境要求
+
+本库的构建目标为 **ES2020**。如果在低版本环境中使用，请确保配置了相应的 Polyfill 或构建转译。
+
 ## 🚀 功能特性
 
 - **缓存管理** - 支持内存、localStorage、sessionStorage 和 IndexedDB 多种存储方式
@@ -529,6 +535,18 @@ formCache.setCache('user-form', formData);
 
 // 恢复表单数据
 const savedData = formCache.getCache('user-form');
+```
+
+## 🛠 开发
+
+本项目包含一个 playground 用于调试和预览。
+
+```bash
+# 安装依赖
+pnpm install
+
+# 启动开发服务器
+npm run dev
 ```
 
 ## 🤝 贡献
