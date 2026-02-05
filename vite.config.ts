@@ -21,8 +21,8 @@ const entries = {
 // 显式定义外部依赖列表
 const externals = [
   'axios',
+  'date-fns',
   'lodash-es',
-  'moment',
   'react',
   'tslib'
 ];

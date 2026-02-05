@@ -1,4 +1,4 @@
-import moment from "moment";
+import { addSeconds, isAfter, parseISO } from "date-fns";
 import { IndexedDBStorage } from "./indexDB";
 import defaultEquals from "../_utils/defaultEquals";
 
@@ -33,7 +33,7 @@ export interface ICache<Param, Data> {
   /**
    * 过期时间
    * - ISO 8601 格式的字符串
-   * - 由 moment().add(cacheTime, 'seconds').toJSON() 生成
+   * - 由 addSeconds(new Date(), cacheTime).toISOString() 生成
    * - 示例：'2025-06-12T10:30:00.000Z'
    */
   expireTime: string;
@@ -170,7 +170,7 @@ export default class Cache<Param, Data> {
    */
   private _filterExpired() {
     const newCache = this.cache.filter((item) => {
-      return moment(item.expireTime).isAfter(moment());
+      return isAfter(parseISO(item.expireTime), new Date());
     });
     this.cache = newCache;
   }
@@ -216,7 +216,7 @@ export default class Cache<Param, Data> {
     this.cache.push({
       params,
       data,
-      expireTime: moment().add(cacheTime, "seconds").toJSON(),
+      expireTime: addSeconds(new Date(), cacheTime ?? 0).toISOString(),
     });
     this._saveToStorage();
   }
@@ -231,7 +231,7 @@ export default class Cache<Param, Data> {
     });
     const item = this.cache[itemIndex];
     if (item) {
-      if (moment(item.expireTime).isAfter(moment())) {
+      if (isAfter(parseISO(item.expireTime), new Date())) {
         return item.data;
       } else {
         this.cache.splice(itemIndex, 1);
