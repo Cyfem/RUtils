@@ -314,8 +314,8 @@ export default function createBaseRequest(baseOptions?: Options) {
         .request<Data, AxiosResponse<Data>, Param>({
           method,
           url,
-          data: data ?? (requestParamsOrDataTransfer ? requestParamsOrDataTransfer(data) : data),
-          params: params ?? (requestParamsOrDataTransfer ? requestParamsOrDataTransfer(params) : params),
+          data: requestParamsOrDataTransfer ? requestParamsOrDataTransfer(data) : data,
+          params: requestParamsOrDataTransfer ? requestParamsOrDataTransfer(params) : params,
           ...finalAxiosOptions,
         })
         .then(
