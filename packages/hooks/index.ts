@@ -1,1 +1,1 @@
-export { useCombineControlValue } from './useCombineControlValue'
+export { useCombineControlValue } from './useCombineControlValue';

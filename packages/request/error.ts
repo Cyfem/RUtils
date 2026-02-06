@@ -8,7 +8,7 @@ export type RequestErrorType = 'server' | 'http';
 /**
  * 请求错误类
  * 用于统一处理请求过程中的各种错误
- * 
+ *
  * @template Data 错误数据类型
  * @extends Error
  */
@@ -25,12 +25,7 @@ export default class RequestError<Data = any> extends Error {
    * @param type 错误类型
    * @param data 错误相关的数据
    */
-  constructor(
-    message: string,
-    type: RequestErrorType,
-    data?: Data,
-    code: string = ''
-  ) {
+  constructor(message: string, type: RequestErrorType, data?: Data, code: string = '') {
     super(message);
     this.name = 'RequestError';
     this.type = type;

@@ -10,7 +10,7 @@ describe('createStateStore', () => {
     // - 传入有参数的函数时，会当作 updater（prevState => nextState）
     expect(resolveHookState(() => 1)).toBe(1);
     expect(resolveHookState((prev: number) => prev + 1, 1)).toBe(2);
-    expect(resolveHookState(3, 1)).toBe(3);
+    expect(resolveHookState<number, number>(3, 1)).toBe(3);
   });
 
   it('updates state and notifies watchers', () => {

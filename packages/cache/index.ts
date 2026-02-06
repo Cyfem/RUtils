@@ -1,6 +1,6 @@
-import { addSeconds, isAfter, parseISO } from "date-fns";
-import { IndexedDBStorage } from "./indexDB";
-import defaultEquals from "../_utils/defaultEquals";
+import { addSeconds, isAfter, parseISO } from 'date-fns';
+import { IndexedDBStorage } from './indexDB';
+import defaultEquals from '../_utils/defaultEquals';
 
 /**
  * 缓存存储类型
@@ -8,7 +8,7 @@ import defaultEquals from "../_utils/defaultEquals";
  * - localStorage: 本地存储，永久保存
  * - indexedDB: IndexedDB 数据库存储
  */
-export type StorageType = "sessionStorage" | "localStorage" | "indexedDB";
+export type StorageType = 'sessionStorage' | 'localStorage' | 'indexedDB';
 
 /**
  * 缓存项接口定义
@@ -117,8 +117,8 @@ export default class Cache<Param, Data> {
     cacheType?: StorageType,
     cacheKey?: string,
     cacheTime?: number,
-    indexDBName = "__apiCacheDatabase__",
-    cacheKeyEquals: (prev: Param, next: Param) => boolean = defaultEquals
+    indexDBName = '__apiCacheDatabase__',
+    cacheKeyEquals: (prev: Param, next: Param) => boolean = defaultEquals,
   ) {
     this.cacheOptions = {
       storageType: cacheType,
@@ -127,9 +127,9 @@ export default class Cache<Param, Data> {
       indexDBName,
       cacheKeyEquals,
     };
-    if (cacheType === "indexedDB") {
-      this.storage = new IndexedDBStorage(indexDBName, "cacheStore" as string);
-    } else if (typeof cacheType === "string") {
+    if (cacheType === 'indexedDB') {
+      this.storage = new IndexedDBStorage(indexDBName, 'cacheStore' as string);
+    } else if (typeof cacheType === 'string') {
       this.storage = StorageMap[cacheType];
     }
     this._init();
@@ -142,17 +142,13 @@ export default class Cache<Param, Data> {
   private async _init() {
     const { storageType: cacheType, cacheKey: cacheKey } = this.cacheOptions;
     if (this.storage instanceof IndexedDBStorage) {
-      this.cache = JSON.parse(
-        (await this.storage.getItem(cacheKey as string)) || "[]"
-      );
+      this.cache = JSON.parse((await this.storage.getItem(cacheKey as string)) || '[]');
     } else if (this.storage instanceof Storage) {
       this.storage = StorageMap[cacheType as string];
       if (this.storage) {
-        if (typeof cacheKey === "string") {
+        if (typeof cacheKey === 'string') {
           try {
-            this.cache = JSON.parse(
-              (this.storage as Storage).getItem(cacheKey as string) || "[]"
-            );
+            this.cache = JSON.parse((this.storage as Storage).getItem(cacheKey as string) || '[]');
           } catch (e) {
             this.cache = [];
             console.error(`缓存数据解析失败，key:${cacheKey}`);
@@ -181,11 +177,8 @@ export default class Cache<Param, Data> {
    */
   private _saveToStorage() {
     if (this.storage) {
-      if (typeof this.cacheOptions.cacheKey === "string") {
-        this.storage.setItem(
-          this.cacheOptions.cacheKey,
-          JSON.stringify(this.cache)
-        );
+      if (typeof this.cacheOptions.cacheKey === 'string') {
+        this.storage.setItem(this.cacheOptions.cacheKey, JSON.stringify(this.cache));
       }
     }
   }
@@ -198,10 +191,7 @@ export default class Cache<Param, Data> {
   setCache(
     params: Param,
     data: Data,
-    cacheOptions?: Omit<
-      ICacheOptions<Param>,
-      "storageType" | "cacheKey" | "cacheKeyEquals"
-    >
+    cacheOptions?: Omit<ICacheOptions<Param>, 'storageType' | 'cacheKey' | 'cacheKeyEquals'>,
   ) {
     const { cacheTime, cacheKeyEquals = defaultEquals } = {
       ...this.cacheOptions,

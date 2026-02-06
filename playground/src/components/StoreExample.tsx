@@ -81,7 +81,7 @@ const getters = createStoreGetter(
     doubleCount: 'double',
     itemCount: 'totalItems',
     greeting: 'greeting',
-  }
+  },
 );
 
 // 创建 memo getters
@@ -96,7 +96,7 @@ const useStoreGetters = createStoreGetterMemo(
     doubleCount: 'double',
     itemCount: 'totalItems',
     greeting: 'greeting',
-  }
+  },
 );
 
 const CounterComponent: React.FC = () => {
@@ -109,9 +109,7 @@ const CounterComponent: React.FC = () => {
         <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }}>
           Count: {state.count}
         </div>
-        <div style={{ color: '#6b7280', marginBottom: '16px' }}>
-          Double: {getters.double}
-        </div>
+        <div style={{ color: '#6b7280', marginBottom: '16px' }}>Double: {getters.double}</div>
       </div>
 
       <div style={{ display: 'flex', gap: '8px' }}>
@@ -127,10 +125,7 @@ const CounterComponent: React.FC = () => {
         >
           -1
         </button>
-        <button
-          className="button button-danger"
-          onClick={() => setState({ count: 0 })}
-        >
+        <button className="button button-danger" onClick={() => setState({ count: 0 })}>
           Reset
         </button>
       </div>
@@ -145,9 +140,7 @@ const NameComponent: React.FC = () => {
     <div className="card">
       <h3>名称组件</h3>
       <div style={{ marginBottom: '16px' }}>
-        <div style={{ fontSize: '18px', marginBottom: '8px' }}>
-          {getters.greeting}
-        </div>
+        <div style={{ fontSize: '18px', marginBottom: '8px' }}>{getters.greeting}</div>
       </div>
 
       <div className="form-group">
@@ -189,19 +182,14 @@ const ItemsComponent: React.FC = () => {
           onChange={(e) => setNewItem(e.target.value)}
           placeholder="输入新项目"
         />
-        <button
-          className="button button-primary"
-          onClick={handleAddItem}
-        >
+        <button className="button button-primary" onClick={handleAddItem}>
           添加
         </button>
       </div>
 
       <div className="list">
         {state.items.length === 0 ? (
-          <div style={{ padding: '12px', color: '#6b7280' }}>
-            暂无项目
-          </div>
+          <div style={{ padding: '12px', color: '#6b7280' }}>暂无项目</div>
         ) : (
           state.items.map((item, index) => (
             <div key={index} className="list-item">
@@ -260,8 +248,8 @@ export const StoreExample: React.FC = () => {
       <div className="card">
         <h2>Store 状态管理</h2>
         <p className="description">
-          RUtils 提供了一个轻量级的状态管理方案，支持在多个组件间共享状态。
-          通过 <code>createStateStore</code> 创建状态存储，使用 Hooks 在组件中访问和更新状态。
+          RUtils 提供了一个轻量级的状态管理方案，支持在多个组件间共享状态。 通过{' '}
+          <code>createStateStore</code> 创建状态存储，使用 Hooks 在组件中访问和更新状态。
         </p>
 
         <CodeBlock code={STORE_CODE} title="使用示例" />
@@ -278,13 +266,15 @@ export const StoreExample: React.FC = () => {
         <GetterMemoComponent />
         <div className="card">
           <h3>全局状态预览</h3>
-          <pre style={{
-            background: '#f5f5f5',
-            padding: '16px',
-            borderRadius: '8px',
-            overflow: 'auto',
-            fontSize: '13px',
-          }}>
+          <pre
+            style={{
+              background: '#f5f5f5',
+              padding: '16px',
+              borderRadius: '8px',
+              overflow: 'auto',
+              fontSize: '13px',
+            }}
+          >
             {JSON.stringify(store.get(), null, 2)}
           </pre>
 

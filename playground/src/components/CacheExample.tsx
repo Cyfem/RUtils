@@ -27,7 +27,9 @@ cache.clear();
 `;
 
 export const CacheExample: React.FC = () => {
-  const [storageType, setStorageType] = useState<'localStorage' | 'sessionStorage' | 'indexedDB'>('localStorage');
+  const [storageType, setStorageType] = useState<'localStorage' | 'sessionStorage' | 'indexedDB'>(
+    'localStorage',
+  );
   const [cacheKey, setCacheKey] = useState('demo-cache');
   const [cacheTime, setCacheTime] = useState(60);
   const [cacheItems, setCacheItems] = useState<CacheItem[]>([]);
@@ -39,11 +41,7 @@ export const CacheExample: React.FC = () => {
   // 初始化缓存实例
   useEffect(() => {
     try {
-      cacheRef.current = new Cache<Record<string, any>, string>(
-        storageType,
-        cacheKey,
-        cacheTime
-      );
+      cacheRef.current = new Cache<Record<string, any>, string>(storageType, cacheKey, cacheTime);
       loadCacheItems();
     } catch (error) {
       console.error('Failed to initialize cache:', error);
@@ -127,8 +125,8 @@ export const CacheExample: React.FC = () => {
       <div className="card">
         <h2>Cache 缓存管理</h2>
         <p className="description">
-          RUtils 提供了一个灵活的缓存管理类，支持三种存储方式：localStorage、sessionStorage 和 IndexedDB。
-          可以设置缓存过期时间，自动清理过期数据。
+          RUtils 提供了一个灵活的缓存管理类，支持三种存储方式：localStorage、sessionStorage 和
+          IndexedDB。 可以设置缓存过期时间，自动清理过期数据。
         </p>
 
         <CodeBlock code={CACHE_CODE} title="使用示例" />
@@ -204,7 +202,14 @@ export const CacheExample: React.FC = () => {
       </div>
 
       <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px',
+          }}
+        >
           <h2>缓存列表</h2>
           <button className="button button-danger" onClick={handleClearCache}>
             清空缓存
@@ -218,13 +223,12 @@ export const CacheExample: React.FC = () => {
             {cacheItems.map((item, index) => (
               <div key={index} className="list-item">
                 <div>
-                  <div style={{ fontWeight: 500, marginBottom: '4px' }}>
-                    {item.key}
-                  </div>
-                  <div style={{ fontSize: '13px', color: '#6b7280' }}>
-                    值: {item.value}
-                  </div>
-                  <span className="badge badge-info" style={{ marginTop: '8px', display: 'inline-block' }}>
+                  <div style={{ fontWeight: 500, marginBottom: '4px' }}>{item.key}</div>
+                  <div style={{ fontSize: '13px', color: '#6b7280' }}>值: {item.value}</div>
+                  <span
+                    className="badge badge-info"
+                    style={{ marginTop: '8px', display: 'inline-block' }}
+                  >
                     {formatExpireTime(item.expireTime)}
                   </span>
                 </div>
@@ -241,9 +245,7 @@ export const CacheExample: React.FC = () => {
       </div>
 
       {message && (
-        <div className={message.type === 'success' ? 'success' : 'error'}>
-          {message.text}
-        </div>
+        <div className={message.type === 'success' ? 'success' : 'error'}>{message.text}</div>
       )}
     </div>
   );

@@ -1,24 +1,30 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from 'react';
 export type UseCombineControlValueOptions<V> = {
-  props: Record<string, any>,
-  valueKey?: string,
-  defaultValue?: V,
-  onChange?: (val: V) => void
-}
+  props: Record<string, any>;
+  valueKey?: string;
+  defaultValue?: V;
+  onChange?: (val: V) => void;
+};
 
 export type UseCombineControlValueEasyResult<V> = {
   value: V;
   onChange: (nextVal: V) => void;
-}
-
+};
 
 export type UseCombineControlValueResolveResult<V, R extends (...args: any[]) => any> = {
   value: V;
   onChange: (...args: Parameters<R>) => void;
-}
+};
 
-export function useCombineControlValue<V>(options: UseCombineControlValueOptions<V>): UseCombineControlValueEasyResult<V>
-export function useCombineControlValue<V, R extends (...args: any[]) => any>(options: Omit<UseCombineControlValueOptions<V>, 'onChange'> & {onChange?: (...args: Parameters<R>) => void}, resolveFn: (...args: Parameters<R>) => V): UseCombineControlValueResolveResult<V, R>
+export function useCombineControlValue<V>(
+  options: UseCombineControlValueOptions<V>,
+): UseCombineControlValueEasyResult<V>;
+export function useCombineControlValue<V, R extends (...args: any[]) => any>(
+  options: Omit<UseCombineControlValueOptions<V>, 'onChange'> & {
+    onChange?: (...args: Parameters<R>) => void;
+  },
+  resolveFn: (...args: Parameters<R>) => V,
+): UseCombineControlValueResolveResult<V, R>;
 /**
  * @param param props 组件属性
  * @param param valueKey 组件值的key，默认value, undefined 被认为是有值，只有当 key 不存在时，转换为非受控模式
@@ -31,35 +37,38 @@ export function useCombineControlValue<V, R extends (...args: any[]) => any>(
     props,
     valueKey = 'value',
     defaultValue,
-    onChange
+    onChange,
   }: UseCombineControlValueOptions<V> & { onChange?: (...args: any[]) => void },
-  resolveFn?: (...args: Parameters<R>) => V
+  resolveFn?: (...args: Parameters<R>) => V,
 ): any {
   const { [valueKey]: value } = props;
   const hasValue = Object.prototype.hasOwnProperty.call(props, valueKey);
 
   const [internalValue, setInternalValue] = useState<V | undefined>(value ?? defaultValue);
 
-  const handleChange = useCallback((...params: any[]) => {
-    let realNextVal: any;
+  const handleChange = useCallback(
+    (...params: any[]) => {
+      let realNextVal: any;
 
-    if (typeof resolveFn === 'function') {
-      realNextVal = resolveFn(...(params as Parameters<R>));
-    } else {
-      realNextVal = params[0];
-    }
+      if (typeof resolveFn === 'function') {
+        realNextVal = resolveFn(...(params as Parameters<R>));
+      } else {
+        realNextVal = params[0];
+      }
 
-    setInternalValue(realNextVal);
-    (onChange as any)?.(...params);
-  }, [onChange, resolveFn]);
+      setInternalValue(realNextVal);
+      (onChange as any)?.(...params);
+    },
+    [onChange, resolveFn],
+  );
 
   const finalValue = useMemo(() => {
-    if(hasValue) return value
-    return internalValue
-  }, [hasValue, internalValue, value])
+    if (hasValue) return value;
+    return internalValue;
+  }, [hasValue, internalValue, value]);
 
   return {
     value: finalValue,
-    onChange: handleChange
-  }
+    onChange: handleChange,
+  };
 }

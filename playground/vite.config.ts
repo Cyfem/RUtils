@@ -12,20 +12,20 @@ export default defineConfig({
           ['@babel/plugin-proposal-decorators', { version: '2023-11' }],
           ['@babel/plugin-proposal-class-properties', { loose: true }],
         ],
-      }
-    })
+      },
+    }),
   ],
-  esbuild:{
-    target: 'es2022'
+  esbuild: {
+    target: 'es2022',
   },
   root: __dirname,
   resolve: {
     alias: {
-      'rxtutils': path.resolve(__dirname, '../packages/index.ts'),
+      rxtutils: path.resolve(__dirname, '../packages/index.ts'),
     },
   },
   server: {
     port: 5173,
-    open: true
-  }
+    open: true,
+  },
 });

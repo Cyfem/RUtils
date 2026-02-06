@@ -1,13 +1,13 @@
-import axios, { AxiosResponse, AxiosRequestConfig, Method } from "axios";
-import at from "lodash-es/at";
+import axios, { AxiosResponse, AxiosRequestConfig, Method } from 'axios';
+import at from 'lodash-es/at';
 import {
   _defaultErrorCodeHandler,
   _defaultHttpErrorCodeHandler,
   _defaultOtherErrorCodeHandler,
-} from "./defaultHandlers";
-import defaultEquals from "../_utils/defaultEquals";
-import Cache, { type StorageType } from "../cache";
-import RequestError, { type RequestErrorType } from "./error";
+} from './defaultHandlers';
+import defaultEquals from '../_utils/defaultEquals';
+import Cache, { type StorageType } from '../cache';
+import RequestError, { type RequestErrorType } from './error';
 
 /**
  * 错误处理器返回类型
@@ -22,7 +22,7 @@ export type ErrorHandlerReturnType<D> = {
    * - false: 不抛出错误
    * - 'default': 使用默认错误处理逻辑
    */
-  throwError?: boolean | "default";
+  throwError?: boolean | 'default';
 };
 
 /**
@@ -100,7 +100,7 @@ export interface Options<Params = any, Data = any> {
         code: string,
         data: Data,
         res: AxiosResponse<Data>,
-        requestParam: RequestOptions<Params>
+        requestParam: RequestOptions<Params>,
       ) => ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>)
   >;
   /**
@@ -110,7 +110,7 @@ export interface Options<Params = any, Data = any> {
   defaultErrorCodeHandler?: (
     code: string,
     data: Data,
-    res: AxiosResponse<Data>
+    res: AxiosResponse<Data>,
   ) => ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>;
   /**
    * 成功状态的错误码列表
@@ -129,8 +129,8 @@ export interface Options<Params = any, Data = any> {
     | ((
         code: number,
         res: AxiosResponse<Data>,
-        requestParam: RequestOptions<Params>
-      ) => (ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>))
+        requestParam: RequestOptions<Params>,
+      ) => ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>)
   >;
   /**
    * 默认 HTTP 错误码处理函数
@@ -138,25 +138,33 @@ export interface Options<Params = any, Data = any> {
    */
   defaultHttpErrorCodeHandler?: (
     code: number,
-    error: any
+    error: any,
   ) => ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>;
   /**
    * 其他错误处理函数
    * 处理非 HTTP 错误和非业务错误码的错误
    */
   otherErrorHandler?: (
-    error: any
+    error: any,
   ) => ErrorHandlerReturnType<Data> | void | Promise<ErrorHandlerReturnType<Data> | void>;
-  axiosOptions?: Omit<
-    AxiosRequestConfig<Params>,
-    "method" | "url" | "params" | "data"
-  >;
+  axiosOptions?: Omit<AxiosRequestConfig<Params>, 'method' | 'url' | 'params' | 'data'>;
 
   // 请求拦截中间件，可支持更改 axiosOptions， requestOptions
-  requestMiddlewares?: ((options: Options<Params, Data>, requestOptions: RequestOptions<Params>) => Promise<{axiosOptions?: Options<Params, Data>["axiosOptions"],requestOptions?: RequestOptions<Params>}> | {axiosOptions: Options<Params, Data>["axiosOptions"],requestOptions?: RequestOptions<Params>})[]
+  requestMiddlewares?: ((
+    options: Options<Params, Data>,
+    requestOptions: RequestOptions<Params>,
+  ) =>
+    | Promise<{
+        axiosOptions?: Options<Params, Data>['axiosOptions'];
+        requestOptions?: RequestOptions<Params>;
+      }>
+    | {
+        axiosOptions: Options<Params, Data>['axiosOptions'];
+        requestOptions?: RequestOptions<Params>;
+      })[];
 
   // 重试次数，仅出错时重试，如果都失败则抛出最后一次的异常(如果配置了抛出异常的话)
-  retryTimes?: number
+  retryTimes?: number;
 
   /**
    * 请求参数或数据转换函数
@@ -164,7 +172,7 @@ export interface Options<Params = any, Data = any> {
    * @param paramsOrData 请求参数或数据
    * @returns 处理后的参数或数据
    */
-  requestParamsOrDataTransfer?: (paramsOrData: Params) => any
+  requestParamsOrDataTransfer?: (paramsOrData: Params) => any;
 
   /**
    * 响应数据转换函数
@@ -172,7 +180,7 @@ export interface Options<Params = any, Data = any> {
    * @param data 响应数据
    * @returns 处理后的响应数据
    */
-  responseTransfer?: (data: any) => Data
+  responseTransfer?: (data: any) => Data;
 }
 
 /**
@@ -212,7 +220,7 @@ export default function createBaseRequest(baseOptions?: Options) {
    */
   return function createRequest<Param, Data extends Record<any, any>>(
     requestOptions: RequestOptions<Param>,
-    createOptions?: Omit<Options<Param, Data>, "baseURL">
+    createOptions?: Omit<Options<Param, Data>, 'baseURL'>,
   ) {
     const { method, url } = { ...requestOptions };
 
@@ -222,7 +230,7 @@ export default function createBaseRequest(baseOptions?: Options) {
       cacheDataInStorage,
       cacheKeyEquals = defaultEquals,
       cacheTime,
-      indexDBName = "__apiCacheDatabase__",
+      indexDBName = '__apiCacheDatabase__',
     } = {
       ...baseOptions,
       ...createOptions,
@@ -233,38 +241,44 @@ export default function createBaseRequest(baseOptions?: Options) {
       cacheDataKey,
       cacheTime,
       indexDBName,
-      cacheKeyEquals
+      cacheKeyEquals,
     );
 
     async function request(
-      requestParam?: Omit<RequestOptions<Param>, "url" | "method">,
+      requestParam?: Omit<RequestOptions<Param>, 'url' | 'method'>,
       options?: Omit<
         Options<Param, Data>,
-        "baseURL" | "cacheDataKey" | "cacheDataInStorage" | "cacheKeyEquals"
-      >
+        'baseURL' | 'cacheDataKey' | 'cacheDataInStorage' | 'cacheKeyEquals'
+      >,
     ): Promise<Data> {
       const mergedOptions = {
         ...baseOptions,
         ...createOptions,
         ...options,
-      } as Options<Param, Data>
-      let { requestMiddlewares = [], axiosOptions: finalAxiosOptions = {}, requestParamsOrDataTransfer, responseTransfer } = mergedOptions
+      } as Options<Param, Data>;
+      let {
+        requestMiddlewares = [],
+        axiosOptions: finalAxiosOptions = {},
+        requestParamsOrDataTransfer,
+        responseTransfer,
+      } = mergedOptions;
       let finalRequestOptions = { ...requestOptions, ...requestParam };
 
-      for(const middleware of requestMiddlewares){
-        const {axiosOptions: nextAxiosOptions = finalAxiosOptions, requestOptions: nextRequestOptions = finalRequestOptions} = await middleware({...mergedOptions,axiosOptions: finalAxiosOptions}, finalRequestOptions);
-        finalAxiosOptions = nextAxiosOptions
-        finalRequestOptions = nextRequestOptions
+      for (const middleware of requestMiddlewares) {
+        const {
+          axiosOptions: nextAxiosOptions = finalAxiosOptions,
+          requestOptions: nextRequestOptions = finalRequestOptions,
+        } = await middleware(
+          { ...mergedOptions, axiosOptions: finalAxiosOptions },
+          finalRequestOptions,
+        );
+        finalAxiosOptions = nextAxiosOptions;
+        finalRequestOptions = nextRequestOptions;
       }
 
-      const {
-        method,
-        url,
-        data = {} as Param,
-        params = {} as Param,
-      } = finalRequestOptions;
+      const { method, url, data = {} as Param, params = {} as Param } = finalRequestOptions;
       let requestDataOrParams = params;
-      if (method.toLowerCase() === "post") {
+      if (method.toLowerCase() === 'post') {
         requestDataOrParams = data;
       }
 
@@ -277,26 +291,17 @@ export default function createBaseRequest(baseOptions?: Options) {
       const {
         enableCache = false,
         cacheData = false,
-        defaultErrorCodeHandler = _defaultErrorCodeHandler.bind(
-          null,
-          defaultMessageShower
-        ),
-        defaultHttpErrorCodeHandler = _defaultHttpErrorCodeHandler.bind(
-          null,
-          defaultMessageShower
-        ),
-        otherErrorHandler = _defaultOtherErrorCodeHandler.bind(
-          null,
-          defaultMessageShower
-        ),
-        errorCodePath = "code",
+        defaultErrorCodeHandler = _defaultErrorCodeHandler.bind(null, defaultMessageShower),
+        defaultHttpErrorCodeHandler = _defaultHttpErrorCodeHandler.bind(null, defaultMessageShower),
+        otherErrorHandler = _defaultOtherErrorCodeHandler.bind(null, defaultMessageShower),
+        errorCodePath = 'code',
         cacheTime = 60,
         errorCodeMap = {},
-        successCodes = ["0", "200"],
+        successCodes = ['0', '200'],
         httpErrorCodeMap = {},
         // axiosOptions = {},
         throwError = true,
-        retryTimes = 0
+        retryTimes = 0,
       } = { ...baseOptions, ...createOptions, ...options };
       if (enableCache) {
         const cacheItem = cache.getCache(requestDataOrParams);
@@ -304,9 +309,9 @@ export default function createBaseRequest(baseOptions?: Options) {
           return Promise.resolve(cacheItem);
         }
       }
-      function retry(){
-        if(retryTimes > 0){
-          return request(requestParam, {...options,retryTimes: retryTimes - 1})
+      function retry() {
+        if (retryTimes > 0) {
+          return request(requestParam, { ...options, retryTimes: retryTimes - 1 });
         }
         return null;
       }
@@ -321,9 +326,10 @@ export default function createBaseRequest(baseOptions?: Options) {
         .then(
           async (res) => {
             const errorCode = String(at(res.data, errorCodePath));
-            let finalData: Data = responseTransfer ? responseTransfer(res.data) as Data : res.data;
+            let finalData: Data = responseTransfer
+              ? (responseTransfer(res.data) as Data)
+              : res.data;
             if (successCodes.includes(errorCode)) {
-
               if (cacheData) {
                 cache.setCache(requestDataOrParams, finalData, { cacheTime });
               }
@@ -331,29 +337,27 @@ export default function createBaseRequest(baseOptions?: Options) {
             }
             // 不在成功 code 中，意味着请求失败
 
-            const { [errorCode]: customHandler = defaultErrorCodeHandler } =
-              errorCodeMap;
+            const { [errorCode]: customHandler = defaultErrorCodeHandler } = errorCodeMap;
 
-            const err = new RequestError("服务端错误", "server", res);
+            const err = new RequestError('服务端错误', 'server', res);
 
-            if (typeof customHandler === "string") {
+            if (typeof customHandler === 'string') {
               defaultMessageShower(customHandler);
-              
+
               const retryTask = retry();
-              if(retryTask) return retryTask
+              if (retryTask) return retryTask;
             } else {
-              const {
-                replaceResData = res.data,
-                throwError: handlerThrowError = "default",
-              } = <ErrorHandlerReturnType<Data>>Object(
+              const { replaceResData = res.data, throwError: handlerThrowError = 'default' } = <
+                ErrorHandlerReturnType<Data>
+              >Object(
                 (await customHandler(errorCode, res.data, res, {
                   ...requestOptions,
                   ...requestParam,
-                })) as Promise<ErrorHandlerReturnType<Data>>
+                })) as Promise<ErrorHandlerReturnType<Data>>,
               );
-              
+
               const retryTask = retry();
-              if(retryTask) return retryTask
+              if (retryTask) return retryTask;
 
               res.data = replaceResData;
               switch (handlerThrowError) {
@@ -376,32 +380,28 @@ export default function createBaseRequest(baseOptions?: Options) {
             if (error.response) {
               // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
               let resData = error;
-              const {
-                [error.response.status]:
-                  customHandler = defaultHttpErrorCodeHandler,
-              } = httpErrorCodeMap;
+              const { [error.response.status]: customHandler = defaultHttpErrorCodeHandler } =
+                httpErrorCodeMap;
 
-              const err = new RequestError("服务端错误", "http", error);
+              const err = new RequestError('服务端错误', 'http', error);
 
-              if (typeof customHandler === "string") {
+              if (typeof customHandler === 'string') {
                 defaultMessageShower(customHandler);
-                
-                const retryTask = retry();
-                if(retryTask) return retryTask
 
+                const retryTask = retry();
+                if (retryTask) return retryTask;
               } else {
-                const {
-                  replaceResData = error,
-                  throwError: handlerThrowError = "default",
-                } = <ErrorHandlerReturnType<Data>>Object(
+                const { replaceResData = error, throwError: handlerThrowError = 'default' } = <
+                  ErrorHandlerReturnType<Data>
+                >Object(
                   (await customHandler(error.response.status, error, {
                     ...requestOptions,
                     ...requestParam,
-                  })) as Promise<ErrorHandlerReturnType<Data>>
+                  })) as Promise<ErrorHandlerReturnType<Data>>,
                 );
-                
+
                 const retryTask = retry();
-                if(retryTask) return retryTask
+                if (retryTask) return retryTask;
 
                 resData = replaceResData;
 
@@ -423,24 +423,16 @@ export default function createBaseRequest(baseOptions?: Options) {
             } else {
               let resData = error;
 
-              const err = new RequestError("服务端错误", "http", error);
-              err.type = "http";
+              const err = new RequestError('服务端错误', 'http', error);
+              err.type = 'http';
               err.data = error;
 
-              const {
-                replaceResData = error,
-                throwError: handlerThrowError = "default",
-              } = <ErrorHandlerReturnType<Data>>(
-                Object(
-                  (await otherErrorHandler(error)) as Promise<
-                    ErrorHandlerReturnType<Data>
-                  >
-                )
-              );
-              
-              
+              const { replaceResData = error, throwError: handlerThrowError = 'default' } = <
+                ErrorHandlerReturnType<Data>
+              >Object((await otherErrorHandler(error)) as Promise<ErrorHandlerReturnType<Data>>);
+
               const retryTask = retry();
-              if(retryTask) return retryTask
+              if (retryTask) return retryTask;
 
               resData = replaceResData;
 
@@ -459,7 +451,7 @@ export default function createBaseRequest(baseOptions?: Options) {
 
               return resData as Data;
             }
-          }
+          },
         );
     }
     request.clearCache = () => {

@@ -158,7 +158,12 @@ describe('validator (BaseValidator + decorators)', () => {
       VMinLength(6)('password too short'),
       VMaxLength(12)('password too long'),
     );
-    applyFieldDecorators(initializers, 'tags', VArray('tags must be array'), VMinLength(2)('need >=2 tags'));
+    applyFieldDecorators(
+      initializers,
+      'tags',
+      VArray('tags must be array'),
+      VMinLength(2)('need >=2 tags'),
+    );
     applyFieldDecorators(initializers, 'score', VMin(0)('min 0'), VMax(100)('max 100'));
     applyFieldDecorators(initializers, 'phone', VPattern(/^1[3-9]\d{9}$/)('phone invalid'));
 
@@ -186,7 +191,9 @@ describe('validator (BaseValidator + decorators)', () => {
     user.tags = ['a', 'b'];
     user.score = 100;
     user.phone = '13812345678';
-    expect(user.validateAll(['email', 'password', 'tags', 'score', 'phone'], true, true)).toBeNull();
+    expect(
+      user.validateAll(['email', 'password', 'tags', 'score', 'phone'], true, true),
+    ).toBeNull();
   });
 
   it('supports message as a function (dynamic message based on value)', () => {

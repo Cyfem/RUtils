@@ -11,8 +11,8 @@ export const downloadBlob = (blob: Blob, fileName: string, autoRevoke: boolean =
   a.href = url;
   a.download = fileName;
   a.click();
-  if(autoRevoke){
+  if (autoRevoke) {
     URL.revokeObjectURL(url);
   }
-  return url
-}
+  return url;
+};

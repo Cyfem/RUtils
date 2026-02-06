@@ -73,7 +73,7 @@ const customCache = new Cache<{ id: number; name: string }, any>(
   'customCache',
   300,
   'customDB',
-  (prev, next) => prev.id === next.id // 只比较 id 字段
+  (prev, next) => prev.id === next.id, // 只比较 id 字段
 );
 ```
 
@@ -90,13 +90,13 @@ import { createBaseRequest } from 'rxtutils';
 const request = createBaseRequest({
   baseURL: 'https://api.example.com',
   throwError: true,
-  defaultMessageShower: (message) => console.log(message)
+  defaultMessageShower: (message) => console.log(message),
 });
 
 // 创建具体请求
 const getUserInfo = request<{ id: number }, { name: string; email: string }>({
   method: 'GET',
-  url: '/user/:id'
+  url: '/user/:id',
 });
 
 // 发送请求
@@ -113,13 +113,13 @@ const request = createBaseRequest({
     '401': '未授权，请重新登录',
     '500': (code, data, res) => ({
       replaceResData: { error: '服务器内部错误' },
-      throwError: false
-    })
+      throwError: false,
+    }),
   },
   httpErrorCodeMap: {
     404: '资源不存在',
-    500: '服务器错误'
-  }
+    500: '服务器错误',
+  },
 });
 ```
 
@@ -132,7 +132,7 @@ const request = createBaseRequest({
   cacheData: true,
   cacheDataInStorage: 'localStorage',
   cacheDataKey: 'api-cache',
-  cacheTime: 300
+  cacheTime: 300,
 });
 
 // 第一次请求会从服务器获取数据
@@ -164,7 +164,7 @@ const userStore = createStateStore({
 // 在组件中使用
 function UserComponent() {
   const [user, setUser] = userStore.use();
-  
+
   const handleLogin = () => {
     setUser({
       name: 'John Doe',
@@ -172,7 +172,7 @@ function UserComponent() {
       isLoggedIn: true
     });
   };
-  
+
   return (
     <div>
       <p>用户名: {user.name}</p>
@@ -280,12 +280,10 @@ console.log(allErrors); // 返回所有验证错误
 import { BaseValidator } from 'rxtutils';
 
 // 创建自定义验证装饰器
-const VCustom = BaseValidator.decoratorCreator(
-  (val) => {
-    // 自定义验证逻辑
-    return typeof val === 'string' && val.startsWith('custom-');
-  }
-);
+const VCustom = BaseValidator.decoratorCreator((val) => {
+  // 自定义验证逻辑
+  return typeof val === 'string' && val.startsWith('custom-');
+});
 
 // 使用自定义验证装饰器
 class Product extends BaseValidator {
@@ -335,7 +333,7 @@ form.password = '123456';
 
 // 验证单个字段的所有规则
 const usernameErrors = form.validate('username', true);
-console.log(usernameErrors); 
+console.log(usernameErrors);
 // [{ status: false, message: '用户名长度不能少于3位' }]
 
 // 验证所有字段，每个字段遇到第一个错误就停止
@@ -385,7 +383,7 @@ const useUserGetters = createStoreGetterMemo(userStore, getters, getterNameMaps)
 
 function UserProfile() {
   const { fullName, isAdult, displayName } = useUserGetters();
-  
+
   return (
     <div>
       <h1>{fullName}</h1>
@@ -400,26 +398,26 @@ function UserProfile() {
 
 ### Cache 配置
 
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `storageType` | `'sessionStorage' \| 'localStorage' \| 'indexedDB'` | `undefined` | 存储类型 |
-| `cacheKey` | `string` | `undefined` | 缓存键名 |
-| `cacheTime` | `number` | `60` | 缓存时间（秒） |
-| `indexDBName` | `string` | `'__apiCacheDatabase__'` | IndexedDB 数据库名称 |
-| `cacheKeyEquals` | `function` | `defaultEquals` | 缓存键比较函数 |
+| 参数             | 类型                                                | 默认值                   | 说明                 |
+| ---------------- | --------------------------------------------------- | ------------------------ | -------------------- |
+| `storageType`    | `'sessionStorage' \| 'localStorage' \| 'indexedDB'` | `undefined`              | 存储类型             |
+| `cacheKey`       | `string`                                            | `undefined`              | 缓存键名             |
+| `cacheTime`      | `number`                                            | `60`                     | 缓存时间（秒）       |
+| `indexDBName`    | `string`                                            | `'__apiCacheDatabase__'` | IndexedDB 数据库名称 |
+| `cacheKeyEquals` | `function`                                          | `defaultEquals`          | 缓存键比较函数       |
 
 ### Request 配置
 
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `baseURL` | `string` | `''` | 请求基础URL |
-| `throwError` | `boolean` | `true` | 是否抛出错误 |
-| `enableCache` | `boolean` | `false` | 是否启用缓存 |
-| `cacheData` | `boolean` | `false` | 是否缓存数据 |
-| `cacheTime` | `number` | `60` | 缓存时间（秒） |
-| `cacheDataInStorage` | `StorageType` | `undefined` | 缓存存储类型 |
-| `errorCodePath` | `string` | `'code'` | 错误码路径 |
-| `successCodes` | `string[]` | `['0', '200']` | 成功状态码 |
+| 参数                 | 类型          | 默认值         | 说明           |
+| -------------------- | ------------- | -------------- | -------------- |
+| `baseURL`            | `string`      | `''`           | 请求基础URL    |
+| `throwError`         | `boolean`     | `true`         | 是否抛出错误   |
+| `enableCache`        | `boolean`     | `false`        | 是否启用缓存   |
+| `cacheData`          | `boolean`     | `false`        | 是否缓存数据   |
+| `cacheTime`          | `number`      | `60`           | 缓存时间（秒） |
+| `cacheDataInStorage` | `StorageType` | `undefined`    | 缓存存储类型   |
+| `errorCodePath`      | `string`      | `'code'`       | 错误码路径     |
+| `successCodes`       | `string[]`    | `['0', '200']` | 成功状态码     |
 
 ## 📝 类型定义
 
@@ -493,12 +491,12 @@ const apiRequest = createBaseRequest({
   enableCache: true,
   cacheData: true,
   cacheDataInStorage: 'localStorage',
-  cacheTime: 300
+  cacheTime: 300,
 });
 
 const getProductList = apiRequest<{ page: number }, { products: Product[] }>({
   method: 'GET',
-  url: '/products'
+  url: '/products',
 });
 ```
 
@@ -509,19 +507,23 @@ const getProductList = apiRequest<{ page: number }, { products: Product[] }>({
 const userStore = createStateStore({
   user: null,
   permissions: [],
-  theme: 'light'
+  theme: 'light',
 });
 
 // 创建用户相关的计算属性
-const userGetters = createStoreGetter(userStore, {
-  isLoggedIn: (state) => !!state.user,
-  canEdit: (state) => state.permissions.includes('edit'),
-  isDarkTheme: (state) => state.theme === 'dark'
-}, {
-  isLoggedIn: 'isLoggedIn',
-  canEdit: 'canEdit',
-  isDarkTheme: 'isDarkTheme'
-});
+const userGetters = createStoreGetter(
+  userStore,
+  {
+    isLoggedIn: (state) => !!state.user,
+    canEdit: (state) => state.permissions.includes('edit'),
+    isDarkTheme: (state) => state.theme === 'dark',
+  },
+  {
+    isLoggedIn: 'isLoggedIn',
+    canEdit: 'canEdit',
+    isDarkTheme: 'isDarkTheme',
+  },
+);
 ```
 
 ### 3. 表单数据缓存
@@ -543,15 +545,63 @@ const savedData = formCache.getCache('user-form');
 
 ```bash
 # 安装依赖
-pnpm install
+pnpm install --frozen-lockfile
 
 # 启动开发服务器
-npm run dev
+pnpm dev
+
+# 运行测试
+pnpm test
+
+# 代码检查
+pnpm lint
+
+# 代码格式化
+pnpm format
+
+# 类型检查
+pnpm typecheck
+
+# 构建
+pnpm build
 ```
 
 ## 🤝 贡献
 
-欢迎提交 Issue 和 Pull Request 来帮助改进这个项目。
+欢迎提交 Issue 和 Pull Request 来帮助改进这个项目。提交前建议先执行：
+
+```bash
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+## 🔧 Git Alias（可选）
+
+如果你习惯使用 Git alias，建议配置到个人环境（`~/.gitconfig`），而不是放在仓库中。
+
+方式一：逐条命令配置
+
+```bash
+git config --global alias.cm commit
+git config --global alias.cc checkout
+git config --global alias.bc branch
+git config --global alias.df diff
+git config --global alias.lg log
+```
+
+方式二：直接追加配置片段到 `~/.gitconfig`
+
+```ini
+[alias]
+  cm = commit
+  cc = checkout
+  bc = branch
+  df = diff
+  lg = log
+```
 
 ## 📄 许可证
 

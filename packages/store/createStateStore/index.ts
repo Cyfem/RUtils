@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect } from 'react';
-type EffectCallback = () => (void | (() => void));
+type EffectCallback = () => void | (() => void);
 
 /**
  * 状态初始化设置器类型
@@ -29,12 +29,8 @@ export type IHookStateSetAction<S> = S | IHookStateSetter<S>;
  * 可解析的状态类型
  * 包含所有可能的状态值或状态设置函数
  */
-export type IHookStateResolvable<S> =
-  | S
-  | IHookStateInitialSetter<S>
-  | IHookStateSetter<S>;
+export type IHookStateResolvable<S> = S | IHookStateInitialSetter<S> | IHookStateSetter<S>;
 
-  
 export function resolveHookState<S>(nextState: IHookStateInitAction<S>): S;
 export function resolveHookState<S, C extends S>(
   nextState: IHookStateSetAction<S>,
@@ -44,7 +40,6 @@ export function resolveHookState<S, C extends S>(
   nextState: IHookStateResolvable<S>,
   currentState: C,
 ): S;
-
 
 export function resolveHookState<S, C extends S>(
   nextState: IHookStateResolvable<S>,
@@ -79,13 +74,13 @@ const useIsomorphicLayoutEffect = isBrowser ? useLayoutEffect : useEffect;
 /**
  * 创建状态存储
  * 提供一个简单的状态管理解决方案，支持组件间状态共享
- * 
+ *
  * @template S 状态类型
  * @param initialState 初始状态值或初始化函数
  * @returns 包含状态操作方法的对象
  */
 export default function createStateStore<S>(initialState?: S) {
-  /** 
+  /**
    * 状态存储对象
    * 包含当前状态、设置状态的方法、状态更新器和监听器列表
    */
@@ -107,7 +102,7 @@ export default function createStateStore<S>(initialState?: S) {
   /**
    * 使用状态的 Hook
    * 返回当前状态和更新状态的函数
-   * 
+   *
    * @returns [当前状态, 状态更新函数]
    */
   const use: () => [S, (state: IHookStateSetAction<S>) => void] = () => {
@@ -130,10 +125,10 @@ export default function createStateStore<S>(initialState?: S) {
   };
   /** 获取当前状态值 */
   const get = () => store.state;
-  
+
   /** 设置状态的函数引用 */
   const set = store.setState;
-  
+
   /**
    * 监听状态变化
    * @param callback 状态变化时的回调函数

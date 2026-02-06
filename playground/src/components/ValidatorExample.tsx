@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { BaseValidator, VRequired, VString, VNumber, VEmail, VMinLength, VMaxLength, VMin, VMax, VPattern } from 'rxtutils';
+import {
+  BaseValidator,
+  VRequired,
+  VString,
+  VNumber,
+  VEmail,
+  VMinLength,
+  VMaxLength,
+  VMin,
+  VMax,
+  VPattern,
+} from 'rxtutils';
 import { CodeBlock } from './CodeBlock';
 
 const VALIDATOR_CODE = `
@@ -140,9 +151,7 @@ export const ValidatorExample: React.FC = () => {
 
       <div className="card">
         <h2>用户表单</h2>
-        <p className="description">
-          填写以下表单字段，然后点击验证按钮查看验证结果。
-        </p>
+        <p className="description">填写以下表单字段，然后点击验证按钮查看验证结果。</p>
 
         <div className="form-group">
           <label className="label">用户名 *</label>
@@ -212,10 +221,7 @@ export const ValidatorExample: React.FC = () => {
             </div>
           )}
           <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
-            <button
-              className="button button-secondary"
-              onClick={() => handleValidateField('age')}
-            >
+            <button className="button button-secondary" onClick={() => handleValidateField('age')}>
               验证此字段
             </button>
           </div>
@@ -247,16 +253,10 @@ export const ValidatorExample: React.FC = () => {
         </div>
 
         <div style={{ marginTop: '24px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <button
-            className="button button-primary"
-            onClick={() => handleValidateAll(false)}
-          >
+          <button className="button button-primary" onClick={() => handleValidateAll(false)}>
             验证所有字段（首个错误）
           </button>
-          <button
-            className="button button-primary"
-            onClick={() => handleValidateAll(true)}
-          >
+          <button className="button button-primary" onClick={() => handleValidateAll(true)}>
             验证所有字段（显示所有错误）
           </button>
           <button
@@ -300,19 +300,25 @@ export const ValidatorExample: React.FC = () => {
 
       <div className="card">
         <h2>当前表单数据</h2>
-        <pre style={{
-          background: '#f5f5f5',
-          padding: '16px',
-          borderRadius: '8px',
-          overflow: 'auto',
-          fontSize: '13px',
-        }}>
-          {JSON.stringify({
-            username: user.username,
-            email: user.email,
-            age: user.age,
-            phone: user.phone,
-          }, null, 2)}
+        <pre
+          style={{
+            background: '#f5f5f5',
+            padding: '16px',
+            borderRadius: '8px',
+            overflow: 'auto',
+            fontSize: '13px',
+          }}
+        >
+          {JSON.stringify(
+            {
+              username: user.username,
+              email: user.email,
+              age: user.age,
+              phone: user.phone,
+            },
+            null,
+            2,
+          )}
         </pre>
       </div>
 
@@ -322,22 +328,44 @@ export const ValidatorExample: React.FC = () => {
           <div>
             <h3>基础类型验证</h3>
             <ul style={{ paddingLeft: '20px', lineHeight: '1.8' }}>
-              <li><code>VRequired</code> - 必填项验证</li>
-              <li><code>VString</code> - 字符串类型</li>
-              <li><code>VNumber</code> - 数字类型</li>
-              <li><code>VArray</code> - 数组类型</li>
-              <li><code>VBoolean</code> - 布尔类型</li>
+              <li>
+                <code>VRequired</code> - 必填项验证
+              </li>
+              <li>
+                <code>VString</code> - 字符串类型
+              </li>
+              <li>
+                <code>VNumber</code> - 数字类型
+              </li>
+              <li>
+                <code>VArray</code> - 数组类型
+              </li>
+              <li>
+                <code>VBoolean</code> - 布尔类型
+              </li>
             </ul>
           </div>
           <div>
             <h3>约束验证</h3>
             <ul style={{ paddingLeft: '20px', lineHeight: '1.8' }}>
-              <li><code>VMin</code> - 最小值</li>
-              <li><code>VMax</code> - 最大值</li>
-              <li><code>VMinLength</code> - 最小长度</li>
-              <li><code>VMaxLength</code> - 最大长度</li>
-              <li><code>VEmail</code> - 邮箱格式</li>
-              <li><code>VPattern</code> - 正则表达式</li>
+              <li>
+                <code>VMin</code> - 最小值
+              </li>
+              <li>
+                <code>VMax</code> - 最大值
+              </li>
+              <li>
+                <code>VMinLength</code> - 最小长度
+              </li>
+              <li>
+                <code>VMaxLength</code> - 最大长度
+              </li>
+              <li>
+                <code>VEmail</code> - 邮箱格式
+              </li>
+              <li>
+                <code>VPattern</code> - 正则表达式
+              </li>
             </ul>
           </div>
         </div>

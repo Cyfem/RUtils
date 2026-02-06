@@ -15,7 +15,7 @@ type Validator = (val: any) => {
 type ValidatorMap = {
   [key: string]: Validator[];
 };
-const KEY_SYMBOL = Symbol("key-description");
+const KEY_SYMBOL = Symbol('key-description');
 /**
  * 基础验证器类
  * 提供字段验证功能，可通过装饰器为类属性添加验证规则
@@ -42,10 +42,7 @@ export class BaseValidator {
    * @param itemKey 要验证的字段名
    * @returns 验证错误数组，如果没有错误则返回null
    */
-  public validate(
-    itemKey: string,
-    itemAll: boolean = false
-  ): string[] | null {
+  public validate(itemKey: string, itemAll: boolean = false): string[] | null {
     const validatorMap = this[this.__keySymbol];
     const errors: string[] = [];
     // 校验每个 key
@@ -76,7 +73,7 @@ export class BaseValidator {
   public validateAll(
     order?: string[],
     itemAll: boolean = false,
-    everyItem: boolean = false
+    everyItem: boolean = false,
   ): Record<string, string[]> | null {
     const validatorMap = this[this.__keySymbol];
     const errors: Record<string, string[]> = {};
@@ -146,22 +143,19 @@ export class BaseValidator {
     func: (
       val: any,
       value: undefined,
-      context: ClassFieldDecoratorContext<BaseValidator>
-    ) => boolean
+      context: ClassFieldDecoratorContext<BaseValidator>,
+    ) => boolean,
   ) => {
     return (
       message:
         | ((
             val: any,
             value: undefined,
-            context: ClassFieldDecoratorContext<BaseValidator>
+            context: ClassFieldDecoratorContext<BaseValidator>,
           ) => string)
-        | string = (val, value, context) => `${String(context.name)}格式错误`
+        | string = (val, value, context) => `${String(context.name)}格式错误`,
     ) => {
-      return function (
-        value: undefined,
-        context: ClassFieldDecoratorContext<BaseValidator>
-      ) {
+      return function (value: undefined, context: ClassFieldDecoratorContext<BaseValidator>) {
         context.addInitializer(function () {
           let validators = this[this.__keySymbol];
           if (!validators) {
@@ -175,8 +169,8 @@ export class BaseValidator {
             if (validateStatus) {
               return { name, status: true };
             } else {
-              let msg: string = "";
-              if (typeof message === "function") {
+              let msg: string = '';
+              if (typeof message === 'function') {
                 msg = message(val, value, context);
               } else {
                 msg = message;

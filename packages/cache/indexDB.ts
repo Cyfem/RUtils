@@ -67,9 +67,7 @@ export class IndexedDBStorage {
    * @private
    * @returns Promise<IDBObjectStore> 存储对象实例
    */
-  private _getStore(
-    mode: IDBTransactionMode = 'readonly',
-  ): Promise<IDBObjectStore> {
+  private _getStore(mode: IDBTransactionMode = 'readonly'): Promise<IDBObjectStore> {
     return this._open().then((db) => {
       const transaction = db.transaction(this.storeName, mode);
       return transaction.objectStore(this.storeName);
@@ -87,8 +85,7 @@ export class IndexedDBStorage {
       return new Promise<void>((resolve, reject) => {
         const request = store.put({ key, value } as StoredObject);
         request.onsuccess = () => resolve();
-        request.onerror = () =>
-          reject(`Could not set the item: ${request.error?.message}`);
+        request.onerror = () => reject(`Could not set the item: ${request.error?.message}`);
       });
     });
   }
@@ -103,10 +100,8 @@ export class IndexedDBStorage {
     return this._getStore().then((store) => {
       return new Promise<T>((resolve, reject) => {
         const request = store.get(key);
-        request.onsuccess = () =>
-          resolve(request.result ? request.result.value : undefined);
-        request.onerror = () =>
-          reject(`Could not get the item: ${request.error?.message}`);
+        request.onsuccess = () => resolve(request.result ? request.result.value : undefined);
+        request.onerror = () => reject(`Could not get the item: ${request.error?.message}`);
       });
     });
   }

@@ -81,7 +81,10 @@ describe('createBaseRequest', () => {
   it('caches POST requests by request body (data)', async () => {
     // 对 POST 来说，库会把 `data` 作为缓存 key（GET 使用 `params`）。
     const requestFactory = createBaseRequest();
-    const post = requestFactory<{ id: number }, { code: string; ok: boolean }>({ method: 'POST', url: '/x' });
+    const post = requestFactory<{ id: number }, { code: string; ok: boolean }>({
+      method: 'POST',
+      url: '/x',
+    });
 
     axiosMock.request.mockResolvedValueOnce({ data: { code: '0', ok: true } });
 
@@ -154,7 +157,10 @@ describe('createBaseRequest', () => {
 
   it('can override business error handling to return replacement data without throwing', async () => {
     const requestFactory = createBaseRequest();
-    const api = requestFactory<undefined, { code: string; ok?: boolean }>({ method: 'GET', url: '/x' });
+    const api = requestFactory<undefined, { code: string; ok?: boolean }>({
+      method: 'GET',
+      url: '/x',
+    });
 
     axiosMock.request.mockResolvedValueOnce({ data: { code: '400' } });
 
@@ -210,7 +216,10 @@ describe('createBaseRequest', () => {
 
   it('retries when retryTimes is set (until success or retries exhausted)', async () => {
     const requestFactory = createBaseRequest();
-    const api = requestFactory<undefined, { code: string; ok?: boolean }>({ method: 'GET', url: '/x' });
+    const api = requestFactory<undefined, { code: string; ok?: boolean }>({
+      method: 'GET',
+      url: '/x',
+    });
 
     const show = vi.fn();
     axiosMock.request
@@ -230,7 +239,10 @@ describe('createBaseRequest', () => {
 
   it('runs requestMiddlewares sequentially to mutate axiosOptions and requestOptions', async () => {
     const requestFactory = createBaseRequest();
-    const api = requestFactory<undefined, { code: string; ok: boolean }>({ method: 'GET', url: '/v1' });
+    const api = requestFactory<undefined, { code: string; ok: boolean }>({
+      method: 'GET',
+      url: '/v1',
+    });
 
     axiosMock.request.mockResolvedValueOnce({ data: { code: '0', ok: true } });
 

@@ -6,7 +6,11 @@ interface CodeBlockProps {
   title?: string;
 }
 
-export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'typescript', title = 'Code' }) => {
+export const CodeBlock: React.FC<CodeBlockProps> = ({
+  code,
+  language = 'typescript',
+  title = 'Code',
+}) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -16,26 +20,34 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'typescri
   };
 
   return (
-    <div style={{
-      background: '#1e1e1e',
-      borderRadius: '8px',
-      overflow: 'hidden',
-      marginTop: '16px',
-      marginBottom: '16px',
-    }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '8px 16px',
-        background: '#252526',
-        borderBottom: '1px solid #3c3c3c',
-      }}>
-        <span style={{
-          color: '#cccccc',
-          fontSize: '14px',
-          fontWeight: '500',
-        }}>{title}</span>
+    <div
+      style={{
+        background: '#1e1e1e',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        marginTop: '16px',
+        marginBottom: '16px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '8px 16px',
+          background: '#252526',
+          borderBottom: '1px solid #3c3c3c',
+        }}
+      >
+        <span
+          style={{
+            color: '#cccccc',
+            fontSize: '14px',
+            fontWeight: '500',
+          }}
+        >
+          {title}
+        </span>
         <button
           onClick={handleCopy}
           style={{
@@ -52,14 +64,16 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({ code, language = 'typescri
           {copied ? '已复制!' : '复制代码'}
         </button>
       </div>
-      <pre style={{
-        margin: '0',
-        padding: '16px',
-        overflow: 'auto',
-        fontSize: '13px',
-        lineHeight: '1.6',
-        color: '#d4d4d4',
-      }}>
+      <pre
+        style={{
+          margin: '0',
+          padding: '16px',
+          overflow: 'auto',
+          fontSize: '13px',
+          lineHeight: '1.6',
+          color: '#d4d4d4',
+        }}
+      >
         <code>{code}</code>
       </pre>
     </div>

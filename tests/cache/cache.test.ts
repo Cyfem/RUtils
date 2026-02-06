@@ -106,10 +106,7 @@ describe('Cache', () => {
 
     const seedStorage = new IndexedDBStorage(dbName, 'cacheStore');
     const expireTime = new Date(Date.now() + 60_000).toISOString();
-    await seedStorage.setItem(
-      key,
-      JSON.stringify([{ params: 'k', data: { v: 1 }, expireTime }]),
-    );
+    await seedStorage.setItem(key, JSON.stringify([{ params: 'k', data: { v: 1 }, expireTime }]));
 
     const cache = new Cache<string, { v: number }>('indexedDB', key, 60, dbName);
 

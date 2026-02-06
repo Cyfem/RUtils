@@ -1,6 +1,0 @@
-[alias]
-  cm = commit
-  cc = checkout
-  bc = branch
-  df = diff
-  lg = log

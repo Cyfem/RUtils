@@ -191,9 +191,7 @@ export const RequestExample: React.FC = () => {
         {activeTab === 'basic' && (
           <>
             <h2>基础 GET 请求</h2>
-            <p className="description">
-              发送一个简单的 GET 请求，从 JSONPlaceholder 获取数据。
-            </p>
+            <p className="description">发送一个简单的 GET 请求，从 JSONPlaceholder 获取数据。</p>
 
             <div className="form-group">
               <label className="label">请求 URL</label>
@@ -246,10 +244,7 @@ export const RequestExample: React.FC = () => {
                 {loading ? '请求中...' : '发送请求（带缓存）'}
               </button>
 
-              <button
-                className="button button-secondary"
-                onClick={handleClearCache}
-              >
+              <button className="button button-secondary" onClick={handleClearCache}>
                 清除缓存
               </button>
             </div>
@@ -263,9 +258,7 @@ export const RequestExample: React.FC = () => {
         {activeTab === 'error' && (
           <>
             <h2>错误处理</h2>
-            <p className="description">
-              演示请求错误时的处理，包括 404、500 等错误。
-            </p>
+            <p className="description">演示请求错误时的处理，包括 404、500 等错误。</p>
 
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
@@ -287,9 +280,7 @@ export const RequestExample: React.FC = () => {
         {activeTab === 'post' && (
           <>
             <h2>POST 请求</h2>
-            <p className="description">
-              发送 POST 请求，创建新的数据。
-            </p>
+            <p className="description">发送 POST 请求，创建新的数据。</p>
 
             <button
               className="button button-primary"
@@ -311,13 +302,15 @@ export const RequestExample: React.FC = () => {
         {data && (
           <div style={{ marginTop: '20px' }}>
             <h3>响应数据:</h3>
-            <pre style={{
-              background: '#f5f5f5',
-              padding: '16px',
-              borderRadius: '8px',
-              overflow: 'auto',
-              marginTop: '12px',
-            }}>
+            <pre
+              style={{
+                background: '#f5f5f5',
+                padding: '16px',
+                borderRadius: '8px',
+                overflow: 'auto',
+                marginTop: '12px',
+              }}
+            >
               {JSON.stringify(data, null, 2)}
             </pre>
           </div>
