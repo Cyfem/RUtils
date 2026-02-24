@@ -203,7 +203,9 @@ export interface RequestOptions<Param> {
  * @param baseOptions 基础配置选项
  * @returns 请求创建函数
  */
-export default function createBaseRequest(baseOptions?: Options) {
+export default function createBaseRequest<D extends Record<any, any>>(
+  baseOptions?: Options<any, D>,
+) {
   const { baseURL } = Object(baseOptions);
 
   // 创建新的 Axios 实例并配置基础URL
