@@ -341,7 +341,7 @@ export default function createBaseRequest<D extends Record<any, any>>(
 
             const { [errorCode]: customHandler = defaultErrorCodeHandler } = errorCodeMap;
 
-            const err = new RequestError('服务端错误', 'server', res);
+            const err = new RequestError('服务端错误', 'server', res, errorCode);
 
             if (typeof customHandler === 'string') {
               defaultMessageShower(customHandler);
@@ -385,8 +385,7 @@ export default function createBaseRequest<D extends Record<any, any>>(
               const { [error.response.status]: customHandler = defaultHttpErrorCodeHandler } =
                 httpErrorCodeMap;
 
-              const err = new RequestError('服务端错误', 'http', error);
-
+              const err = new RequestError('服务端错误', 'http', error, error.response.status);
               if (typeof customHandler === 'string') {
                 defaultMessageShower(customHandler);
 
@@ -425,9 +424,7 @@ export default function createBaseRequest<D extends Record<any, any>>(
             } else {
               let resData = error;
 
-              const err = new RequestError('服务端错误', 'http', error);
-              err.type = 'http';
-              err.data = error;
+              const err = new RequestError('服务端错误', 'http', error, undefined);
 
               const { replaceResData = error, throwError: handlerThrowError = 'default' } = <
                 ErrorHandlerReturnType<Data>
